@@ -9,41 +9,46 @@ public class Combination {
 	public BlockchainType blockchainType;
 	public Boolean onChainModel;
 	public Enforcement enforcement;
+	public double globalenforcement;
 	
 	//set for tasks
-	public Combination(Boolean onChainExecution, BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement){
+	public Combination(Boolean onChainExecution, BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement , double globalenforcement){
 		this.onChainExecution = onChainExecution;
 		this.onChainData = null;
 		this.blockchainType = blockchainType;
 		this.onChainModel = onChainModel;
 		this.enforcement = enforcement;
+		this.globalenforcement = globalenforcement;
 	}
 	
 	//set for dataitems
-	public Combination(OnChainData onChainData, BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement){
+	public Combination(OnChainData onChainData, BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement, double globalenforcement){
 		this.onChainExecution = null;
 		this.onChainData = onChainData;
 		this.blockchainType = blockchainType;
 		this.onChainModel = onChainModel;
 		this.enforcement = enforcement;
+		this.globalenforcement = globalenforcement;
 	}
 	
 	//set for processes and subprocesses
-	public Combination(BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement){
+	public Combination(BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement,double globalenforcement){
 		this.onChainExecution = null;
 		this.onChainData = null;
 		this.blockchainType = blockchainType;
 		this.onChainModel = onChainModel;
 		this.enforcement = enforcement;
+		this.globalenforcement = globalenforcement;
 	}
 	
 	//set for definitions
-	public Combination(BlockchainType blockchainType, Enforcement enforcement){
+	public Combination(BlockchainType blockchainType, Enforcement enforcement,double globalenforcement){
 		this.onChainExecution = null;
 		this.onChainData = null;
 		this.blockchainType = blockchainType;
 		this.onChainModel = null;
 		this.enforcement = enforcement;
+		this.globalenforcement = globalenforcement;
 	}
 	
 	//create a copy
@@ -53,15 +58,16 @@ public class Combination {
 		this.blockchainType = original.blockchainType;
 		this.onChainModel = original.onChainModel;
 		this.enforcement = original.enforcement;
+		this.globalenforcement = original.globalenforcement;
 	}
 		
 	public String toString(){
 		if(onChainExecution != null)
-			return "{onChainExecution: " + onChainExecution + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + "}";
+			return "{onChainExecution: " + onChainExecution + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement +",globalEnforcement: "+ globalenforcement +"}";
 		else if (onChainData != null)
-			return "{onChainData: " + onChainData + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + "}";
+			return "{onChainData: " + onChainData + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + ",globalEnforcement: "+ globalenforcement +"}";
 		else
-			return "{blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + "}";
+			return "{blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + ",globalEnforcement: \"+ globalenforcement +\"}";
 	}
 
 	public boolean satisfies(Combination constraint) {

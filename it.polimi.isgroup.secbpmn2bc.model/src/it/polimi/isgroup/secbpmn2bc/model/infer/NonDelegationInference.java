@@ -15,17 +15,17 @@ public class NonDelegationInference implements SecurityAnnotationInference {
 	private List<Combination> getTaskCombinations(Task task){
 		List<Combination> result = new ArrayList<Combination>();
 		//taskexec false, bc any, model any, possible enf
-		result.add(new Combination(false, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
-		result.add(new Combination(false, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
-		result.add(new Combination(false, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-		result.add(new Combination(false, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
+		result.add(new Combination(false, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+		result.add(new Combination(false, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+		result.add(new Combination(false, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+		result.add(new Combination(false, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 		
 		if(task.getType() != TaskType.MANUAL && task.getType() != TaskType.USER) {
 			//taskexec true, bc any, model any, native enf
-			result.add(new Combination(true, BlockchainType.PUBLIC, false, Enforcement.NATIVE));
-			result.add(new Combination(true, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
-			result.add(new Combination(true, BlockchainType.PUBLIC, true, Enforcement.NATIVE));
-			result.add(new Combination(true, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
+			result.add(new Combination(true, BlockchainType.PUBLIC, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(true, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(true, BlockchainType.PUBLIC, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(true, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 		}
 		
 		return result;

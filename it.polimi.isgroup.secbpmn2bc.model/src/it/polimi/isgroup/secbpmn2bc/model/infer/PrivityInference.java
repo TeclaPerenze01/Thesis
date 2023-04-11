@@ -26,30 +26,30 @@ public class PrivityInference implements SecurityAnnotationInference {
 		if(scope==PrivityScope.PUBLIC){
 
 			//data unencrypted, bc public, model any, native enf
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.NATIVE));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 			
 			//data encrypted, bc public, model any, possible enf
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data (un)encrypted, bc private, model any, native enf
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 			
 			//data digest, bc any, model any, possible enf
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data none, bc any, model any, no enf
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
 		
 		//private sphere
 		} else if (scope==PrivityScope.PRIVATE){
@@ -58,26 +58,26 @@ public class PrivityInference implements SecurityAnnotationInference {
 			//no combination should be provided in this case
 			
 			//data encrypted, bc public, model any, possible enf
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data (un)encrypted, bc private, model any, native enf
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 			
 			//data digest, bc any, model any, possible enf
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data none, bc any, model any, no enf
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
 			
 		//static, weak-dynamic and strong-dynamic spheres
 		} else {
@@ -85,26 +85,26 @@ public class PrivityInference implements SecurityAnnotationInference {
 			//no combination should be provided in this case
 			
 			//data encrypted, bc public, model any, possible enf
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data (un)encrypted, bc private, model any, possible enf
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data digest, bc any, model any, possible enf
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data none, bc any, model any, no enf
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
 		
 		}
 		return result;
@@ -116,30 +116,30 @@ public class PrivityInference implements SecurityAnnotationInference {
 		//public sphere
 		if(scope==PrivityScope.PUBLIC){
 			//data unencrypted, bc public, model any, native enf
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.NATIVE));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 			
 			//data encrypted, bc public, model any, native enf
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data (un)encrypted, bc private, model any, native enf
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 			
 			//data digest, bc any, model any, possible enf
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data none, bc any, model any, no enf
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
 		
 		// private sphere
 		} else if(scope==PrivityScope.PRIVATE){
@@ -147,26 +147,26 @@ public class PrivityInference implements SecurityAnnotationInference {
 			//no combination should be provided in this case
 			
 			//data encrypted, bc public, model any, possible enf
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data (un)encrypted, bc private, model any, native enf
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 			
 			//data digest, bc any, model any, possible enf
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data none, bc any, model any, no enf
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
 			
 		//strong-dynamic sphere
 		} else if(scope==PrivityScope.STRONG_DYNAMIC){
@@ -174,26 +174,26 @@ public class PrivityInference implements SecurityAnnotationInference {
 			//no combination should be provided in this case
 			
 			//data encrypted, bc public, model any, native enf
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.NATIVE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.NATIVE));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 			
 			//data (un)encrypted, bc private, model any, native enf
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data digest, bc any, model any, possible enf
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data none, bc any, model any, no enf
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
 		
 		//static and weak-dynamic spheres
 		} else {
@@ -202,26 +202,26 @@ public class PrivityInference implements SecurityAnnotationInference {
 			//no combination should be provided in this case
 			
 			//data encrypted, bc public, model any, possible enf
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data (un)encrypted, bc private, model any, possible enf
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.UNENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.ENCRYPTED, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data digest, bc any, model any, possible enf
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE));
-			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PUBLIC, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, true, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+			result.add(new Combination(OnChainData.DIGEST, BlockchainType.PRIVATE, false, Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 			
 			//data none, bc any, model any, no enf
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(OnChainData.NONE, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
 			
 		}
 		return result;
@@ -236,27 +236,27 @@ public class PrivityInference implements SecurityAnnotationInference {
 		if(scope==PrivityScope.PUBLIC){
 		
 			//taskexec false, bc any, model any, native enf
-			result.add(new Combination(false, BlockchainType.PUBLIC, true, Enforcement.NATIVE));
-			result.add(new Combination(false, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
-			result.add(new Combination(false, BlockchainType.PUBLIC, false, Enforcement.NATIVE));
-			result.add(new Combination(false, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
+			result.add(new Combination(false, BlockchainType.PUBLIC, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(false, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(false, BlockchainType.PUBLIC, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+			result.add(new Combination(false, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 					
 			if(task.getType() != TaskType.MANUAL && task.getType() != TaskType.USER) {
 
 				//taskexec true, bc any, model any, native enf
-				result.add(new Combination(true, BlockchainType.PUBLIC, false, Enforcement.NATIVE));
-				result.add(new Combination(true, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
-				result.add(new Combination(true, BlockchainType.PUBLIC, true, Enforcement.NATIVE));
-				result.add(new Combination(true, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
+				result.add(new Combination(true, BlockchainType.PUBLIC, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+				result.add(new Combination(true, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+				result.add(new Combination(true, BlockchainType.PUBLIC, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+				result.add(new Combination(true, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 			}
 			
 		//private, static, weak-dynamic and strong-dynamic spheres
 		} else {
 			//taskexec false, bc any, model any, no enf
-			result.add(new Combination(false, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(false, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(false, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT));
-			result.add(new Combination(false, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT));
+			result.add(new Combination(false, BlockchainType.PUBLIC, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(false, BlockchainType.PRIVATE, true, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(false, BlockchainType.PUBLIC, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+			result.add(new Combination(false, BlockchainType.PRIVATE, false, Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
 			
 			if(task.getType() != TaskType.MANUAL && task.getType() != TaskType.USER) {
 
@@ -264,8 +264,8 @@ public class PrivityInference implements SecurityAnnotationInference {
 				//no combination should be provided in this case
 			
 				//taskexec true, bc private, model any, native enf
-				result.add(new Combination(true, BlockchainType.PRIVATE, false, Enforcement.NATIVE));
-				result.add(new Combination(true, BlockchainType.PRIVATE, true, Enforcement.NATIVE));
+				result.add(new Combination(true, BlockchainType.PRIVATE, false, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
+				result.add(new Combination(true, BlockchainType.PRIVATE, true, Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 			}
 		}
 		return result;
