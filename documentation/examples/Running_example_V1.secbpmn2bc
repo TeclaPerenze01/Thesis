@@ -1,25 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<secbpmn2bc:Definitions xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:secbpmn="http://it.unitn.disi.sweng.secbpmn.model/1.0" xmlns:secbpmn2bc="http://it.polimi.isgroup.secbpmn2bc.model/1.0" uuid="Definitions_1">
+<secbpmn2bc:Definitions xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:secbpmn="http://it.unitn.disi.sweng.secbpmn.model/1.0" xmlns:secbpmn2bc="http://it.polimi.isgroup.secbpmn2bc.model/1.0" uuid="Definitions_1" BlockchainType="Public" OnChainModel="true">
   <nodes xsi:type="secbpmn:Participant" uuid="Participant_2" incomingConnections="3cfe0587-bf05-42a5-a22a-81c72a436efd" name="Citizen" processRef="Process_3">
-    <nodes xsi:type="secbpmn2bc:Process" uuid="Process_3" name="Citizen Process">
+    <nodes xsi:type="secbpmn2bc:Process" uuid="Process_3" name="Citizen Process" OnChainModel="true">
       <nodes xsi:type="secbpmn:EndEvent" uuid="EndEvent_5" incomingConnections="SequenceFlow_17" name="End Event 5"/>
       <nodes xsi:type="secbpmn:CatchEvent" uuid="IntermediateCatchEvent_1" incomingConnections="SequenceFlow_13 TransferNotification" outgoingConnections="SequenceFlow_17" name="Receive notifiocation"/>
       <nodes xsi:type="secbpmn:StartEvent" uuid="StartEvent_1" outgoingConnections="SequenceFlow_1" name="Start Event 1"/>
-      <nodes xsi:type="secbpmn2bc:Task" uuid="Task_1" incomingConnections="SequenceFlow_1" outgoingConnections="SequenceFlow_13 TransferClaim 25ecfa38-134b-4e2f-bb38-62bdbeaa120e d4f47764-dd63-4d85-8ef6-3816d862bd8e" name="Report claim" type="User"/>
+      <nodes xsi:type="secbpmn2bc:Task" uuid="Task_1" incomingConnections="SequenceFlow_1" outgoingConnections="SequenceFlow_13 TransferClaim 25ecfa38-134b-4e2f-bb38-62bdbeaa120e d4f47764-dd63-4d85-8ef6-3816d862bd8e" name="Report claim" type="User" OnChainExecution="false"/>
+      <nodes xsi:type="secbpmn2bc:Process" uuid="Process_3" name="Citizen Process" OnChainModel="true">
+        <nodes xsi:type="secbpmn:EndEvent" uuid="EndEvent_5" incomingConnections="SequenceFlow_17" name="End Event 5"/>
+        <nodes xsi:type="secbpmn:CatchEvent" uuid="IntermediateCatchEvent_1" incomingConnections="SequenceFlow_13" outgoingConnections="SequenceFlow_17" name="Receive notifiocation"/>
+        <nodes xsi:type="secbpmn:StartEvent" uuid="StartEvent_1" outgoingConnections="SequenceFlow_1" name="Start Event 1"/>
+        <nodes xsi:type="secbpmn2bc:Task" uuid="Task_1" incomingConnections="SequenceFlow_1" outgoingConnections="SequenceFlow_13" name="Report claim" type="User" OnChainExecution="false"/>
+        <relations xsi:type="secbpmn:SequenceFlow" uuid="SequenceFlow_1" source="StartEvent_1" target="Task_1"/>
+        <relations xsi:type="secbpmn:SequenceFlow" uuid="SequenceFlow_13" source="Task_1" target="IntermediateCatchEvent_1"/>
+        <relations xsi:type="secbpmn:SequenceFlow" uuid="SequenceFlow_17" source="IntermediateCatchEvent_1" target="EndEvent_5"/>
+      </nodes>
       <relations xsi:type="secbpmn:SequenceFlow" uuid="SequenceFlow_1" source="StartEvent_1" target="Task_1"/>
-      <relations xsi:type="secbpmn:SequenceFlow" uuid="SequenceFlow_13" source="Task_1" target="IntermediateCatchEvent_1"/>
+      <relations xsi:type="secbpmn:SequenceFlow" uuid="SequenceFlow_13" outgoingConnections="3cfe0587-bf05-42a5-a22a-81c72a436efd" source="Task_1" target="IntermediateCatchEvent_1"/>
       <relations xsi:type="secbpmn:SequenceFlow" uuid="SequenceFlow_17" source="IntermediateCatchEvent_1" target="EndEvent_5"/>
     </nodes>
   </nodes>
   <nodes xsi:type="secbpmn:Participant" uuid="Participant_3" incomingConnections="7b69b56b-7360-4827-8de6-7899a45db932" name="Municipality" processRef="Process_2">
-    <nodes xsi:type="secbpmn2bc:Process" uuid="Process_2" name="Monicipality Process">
+    <nodes xsi:type="secbpmn2bc:Process" uuid="Process_2" name="Monicipality Process" OnChainModel="true">
       <nodes xsi:type="secbpmn:Lane" uuid="Lane_1" name="Resident registration">
         <nodes xsi:type="secbpmn:StartEvent" uuid="StartEvent_2" incomingConnections="TransferClaim" outgoingConnections="SequenceFlow_2" name="Receive claim"/>
-        <nodes xsi:type="secbpmn2bc:Task" uuid="Task_2" incomingConnections="SequenceFlow_2 d90c5623-c534-4e1b-aaa4-8d7983ebbf89" outgoingConnections="SequenceFlow_3" name="Check claim" type="BusinessRule"/>
+        <nodes xsi:type="secbpmn2bc:Task" uuid="Task_2" incomingConnections="SequenceFlow_2 d90c5623-c534-4e1b-aaa4-8d7983ebbf89" outgoingConnections="SequenceFlow_3" name="Check claim" type="BusinessRule" OnChainExecution="false"/>
         <nodes xsi:type="secbpmn:ExclusiveGateway" uuid="ExclusiveGateway_1" incomingConnections="SequenceFlow_3" outgoingConnections="SequenceFlow_4 SequenceFlow_11" name="Local citizen?">
           <nodes xsi:type="secbpmn2bc:Enforceability" uuid="77510fcd-0b0e-44c4-b8a3-1c72996495b0"/>
         </nodes>
-        <nodes xsi:type="secbpmn2bc:Task" uuid="Task_3" incomingConnections="SequenceFlow_4 14071655-6c61-42fe-bbfe-f55a5cee3fb2" outgoingConnections="SequenceFlow_5" name="Assess urgency" type="BusinessRule"/>
+        <nodes xsi:type="secbpmn2bc:Task" uuid="Task_3" incomingConnections="SequenceFlow_4 14071655-6c61-42fe-bbfe-f55a5cee3fb2" outgoingConnections="SequenceFlow_5" name="Assess urgency" type="BusinessRule" OnChainExecution="true"/>
         <nodes xsi:type="secbpmn:ExclusiveGateway" uuid="ExclusiveGateway_2" incomingConnections="SequenceFlow_5" outgoingConnections="SequenceFlow_6 SequenceFlow_7" name="Urgent?">
           <nodes xsi:type="secbpmn2bc:Enforceability" uuid="8ca14738-c9de-47ef-9ba1-a2cf90c59512"/>
         </nodes>
@@ -27,16 +36,16 @@
       </nodes>
       <nodes xsi:type="secbpmn:Lane" uuid="Lane_2" name="Timber yard">
         <nodes xsi:type="secbpmn:Lane" uuid="Lane_3" name="Road worker">
-          <nodes xsi:type="secbpmn2bc:Task" uuid="Task_4" incomingConnections="SequenceFlow_6 aa53b4b3-81bf-4fb9-830e-7c4209a6a10a" outgoingConnections="SequenceFlow_8" name="Repair with high priority" type="Manual">
+          <nodes xsi:type="secbpmn2bc:Task" uuid="Task_4" incomingConnections="SequenceFlow_6 aa53b4b3-81bf-4fb9-830e-7c4209a6a10a" outgoingConnections="SequenceFlow_8" name="Repair with high priority" type="Manual" OnChainExecution="false">
             <nodes xsi:type="secbpmn:Availability" uuid="fe486148-c97d-4395-a9aa-ba39d3724872"/>
           </nodes>
         </nodes>
         <nodes xsi:type="secbpmn:Lane" uuid="Lane_4" name="Mid-term planner">
-          <nodes xsi:type="secbpmn2bc:Task" uuid="Task_5" incomingConnections="SequenceFlow_7 dbaea4ec-3d86-4de5-b90b-62b4bc05de32" outgoingConnections="SequenceFlow_15 99e8d5c7-a3d7-4905-9ad4-03d87730596e" name="Add case to muuid-term plan" type="Script"/>
+          <nodes xsi:type="secbpmn2bc:Task" uuid="Task_5" incomingConnections="SequenceFlow_7 dbaea4ec-3d86-4de5-b90b-62b4bc05de32" outgoingConnections="SequenceFlow_15 99e8d5c7-a3d7-4905-9ad4-03d87730596e" name="Add case to muuid-term plan" type="Script" OnChainExecution="true"/>
         </nodes>
       </nodes>
       <nodes xsi:type="secbpmn:Lane" uuid="Lane_5" name="Mayor's office">
-        <nodes xsi:type="secbpmn2bc:Task" uuid="Task_6" incomingConnections="SequenceFlow_8 f075807e-c9e6-4d24-bdef-ccac97b83282" outgoingConnections="SequenceFlow_14" name="Send gift card" type="Manual"/>
+        <nodes xsi:type="secbpmn2bc:Task" uuid="Task_6" incomingConnections="SequenceFlow_8 f075807e-c9e6-4d24-bdef-ccac97b83282" outgoingConnections="SequenceFlow_14" name="Send gift card" type="Manual" OnChainExecution="false"/>
         <nodes xsi:type="secbpmn:ThrowEvent" uuid="IntermediateThrowEvent_1" incomingConnections="SequenceFlow_16" outgoingConnections="SequenceFlow_9 TransferNotification" name="Notify citizen"/>
         <nodes xsi:type="secbpmn:ExclusiveGateway" uuid="ExclusiveGateway_3" incomingConnections="SequenceFlow_14 SequenceFlow_15" outgoingConnections="SequenceFlow_16"/>
         <nodes xsi:type="secbpmn:EndEvent" uuid="EndEvent_1" incomingConnections="SequenceFlow_9" name="End Event 1"/>
@@ -55,25 +64,25 @@
       <relations xsi:type="secbpmn:SequenceFlow" uuid="SequenceFlow_9" source="IntermediateThrowEvent_1" target="EndEvent_1"/>
     </nodes>
   </nodes>
-  <nodes xsi:type="secbpmn2bc:Message" uuid="68c4c587-4a74-4584-a4b9-cca00a1b3b58" name="TransferClaim" references="b5812ad5-388c-49b5-ab57-13ad1c24018b"/>
-  <nodes xsi:type="secbpmn2bc:Message" uuid="ee201473-7ad6-47c9-b154-5d33f5ed7eae" name="TransferNotification" references="7de2e725-c8c4-41ae-a2bd-70272eb13087"/>
-  <nodes xsi:type="secbpmn2bc:DataObject" uuid="DataObject_2" incomingConnections="25ecfa38-134b-4e2f-bb38-62bdbeaa120e" outgoingConnections="f075807e-c9e6-4d24-bdef-ccac97b83282 d90c5623-c534-4e1b-aaa4-8d7983ebbf89" name="Citizen's personal data">
+  <nodes xsi:type="secbpmn2bc:Message" uuid="68c4c587-4a74-4584-a4b9-cca00a1b3b58" name="TransferClaim" OnChainData="Unencrypted" references="b5812ad5-388c-49b5-ab57-13ad1c24018b"/>
+  <nodes xsi:type="secbpmn2bc:Message" uuid="ee201473-7ad6-47c9-b154-5d33f5ed7eae" name="TransferNotification" OnChainData="Unencrypted" references="7de2e725-c8c4-41ae-a2bd-70272eb13087"/>
+  <nodes xsi:type="secbpmn2bc:DataObject" uuid="DataObject_2" incomingConnections="25ecfa38-134b-4e2f-bb38-62bdbeaa120e" outgoingConnections="f075807e-c9e6-4d24-bdef-ccac97b83282 d90c5623-c534-4e1b-aaa4-8d7983ebbf89" name="Citizen's personal data" OnChainData="Digest">
     <nodes xsi:type="secbpmn:Integrity" uuid="bb0558aa-dd3c-4313-b676-0164c20fb836" documentation=""/>
     <nodes xsi:type="secbpmn2bc:PrivitySphere" uuid="bb0558aa-dd3c-4313-b676-0164c20fb830" Scope="StrongDynamic"/>
   </nodes>
-  <nodes xsi:type="secbpmn2bc:DataObject" uuid="DataObject_4" incomingConnections="d4f47764-dd63-4d85-8ef6-3816d862bd8e" outgoingConnections="14071655-6c61-42fe-bbfe-f55a5cee3fb2 aa53b4b3-81bf-4fb9-830e-7c4209a6a10a dbaea4ec-3d86-4de5-b90b-62b4bc05de32" name="Claim description">
+  <nodes xsi:type="secbpmn2bc:DataObject" uuid="DataObject_4" incomingConnections="d4f47764-dd63-4d85-8ef6-3816d862bd8e" outgoingConnections="14071655-6c61-42fe-bbfe-f55a5cee3fb2 aa53b4b3-81bf-4fb9-830e-7c4209a6a10a dbaea4ec-3d86-4de5-b90b-62b4bc05de32" name="Claim description" OnChainData="Unencrypted">
     <nodes xsi:type="secbpmn2bc:PrivitySphere" uuid="bb0558aa-dd3c-4313-b676-0164c20fb831"/>
   </nodes>
-  <nodes xsi:type="secbpmn2bc:DataObject" uuid="DataObject_6" incomingConnections="99e8d5c7-a3d7-4905-9ad4-03d87730596e" name="General renovation plan">
+  <nodes xsi:type="secbpmn2bc:DataObject" uuid="DataObject_6" incomingConnections="99e8d5c7-a3d7-4905-9ad4-03d87730596e" name="General renovation plan" OnChainData="Unencrypted">
     <nodes xsi:type="secbpmn2bc:PrivitySphere" uuid="bb0558aa-dd3c-4313-b676-0164c20fb832"/>
   </nodes>
-  <nodes xsi:type="secbpmn:SeparationOfDuty" uuid="3b89a93d-27ac-4a17-91c7-66800fc3c85a" outgoingConnections="3cfe0587-bf05-42a5-a22a-81c72a436efd 7b69b56b-7360-4827-8de6-7899a45db932" securityAssociation="3cfe0587-bf05-42a5-a22a-81c72a436efd 7b69b56b-7360-4827-8de6-7899a45db932"/>
+  <nodes xsi:type="secbpmn:SeparationOfDuty" uuid="3b89a93d-27ac-4a17-91c7-66800fc3c85a" outgoingConnections="7b69b56b-7360-4827-8de6-7899a45db932" securityAssociation="3cfe0587-bf05-42a5-a22a-81c72a436efd 7b69b56b-7360-4827-8de6-7899a45db932"/>
   <nodes xsi:type="secbpmn2bc:Enforceability" uuid="60be5395-e4b8-40b1-aeb5-d0d7c5f27167"/>
   <relations xsi:type="secbpmn:MessageFlow" uuid="TransferClaim" source="Task_1" target="StartEvent_2" message="68c4c587-4a74-4584-a4b9-cca00a1b3b58">
-    <messageRef uuid="b5812ad5-388c-49b5-ab57-13ad1c24018b" reference="68c4c587-4a74-4584-a4b9-cca00a1b3b58"/>
+    <messageRef uuid="b5812ad5-388c-49b5-ab57-13ad1c24018b" name="TransferClaim" reference="68c4c587-4a74-4584-a4b9-cca00a1b3b58"/>
   </relations>
   <relations xsi:type="secbpmn:MessageFlow" uuid="TransferNotification" source="IntermediateThrowEvent_1" target="IntermediateCatchEvent_1" message="ee201473-7ad6-47c9-b154-5d33f5ed7eae">
-    <messageRef uuid="7de2e725-c8c4-41ae-a2bd-70272eb13087" reference="ee201473-7ad6-47c9-b154-5d33f5ed7eae"/>
+    <messageRef uuid="7de2e725-c8c4-41ae-a2bd-70272eb13087" name="TransferNotification" reference="ee201473-7ad6-47c9-b154-5d33f5ed7eae"/>
   </relations>
   <relations xsi:type="secbpmn:DataAssociation" uuid="f075807e-c9e6-4d24-bdef-ccac97b83282" source="DataObject_2" target="Task_6"/>
   <relations xsi:type="secbpmn:DataAssociation" uuid="d90c5623-c534-4e1b-aaa4-8d7983ebbf89" source="DataObject_2" target="Task_2"/>
@@ -83,6 +92,6 @@
   <relations xsi:type="secbpmn:DataAssociation" uuid="aa53b4b3-81bf-4fb9-830e-7c4209a6a10a" source="DataObject_4" target="Task_4"/>
   <relations xsi:type="secbpmn:DataAssociation" uuid="dbaea4ec-3d86-4de5-b90b-62b4bc05de32" source="DataObject_4" target="Task_5"/>
   <relations xsi:type="secbpmn:DataAssociation" uuid="99e8d5c7-a3d7-4905-9ad4-03d87730596e" source="Task_5" target="DataObject_6"/>
-  <relations xsi:type="secbpmn:SecurityAssociation" uuid="3cfe0587-bf05-42a5-a22a-81c72a436efd" source="3b89a93d-27ac-4a17-91c7-66800fc3c85a" target="Participant_2" description=""/>
+  <relations xsi:type="secbpmn:SecurityAssociation" uuid="3cfe0587-bf05-42a5-a22a-81c72a436efd" source="SequenceFlow_13" target="Participant_2" description=""/>
   <relations xsi:type="secbpmn:SecurityAssociation" uuid="7b69b56b-7360-4827-8de6-7899a45db932" source="3b89a93d-27ac-4a17-91c7-66800fc3c85a" target="Participant_3" description=""/>
 </secbpmn2bc:Definitions>

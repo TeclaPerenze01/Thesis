@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Welcome to the SecBPMN2BC page!
 
 SecBPMN2BC is a method created to support the design of *secure business processes* to be executed in blockchain. It is composed of a modelling language, a suggested workflow and a software tool that partially support the workflow by identifying conflicts and the part of the busines process that can be executed in blockchain.
@@ -45,3 +46,6 @@ Your Eclipse interface should now be similar to the following screenshot:
 ![Element properies](https://github.com/MattiaSalnitri/SecBPMN2BC/blob/main/documentation/images/4-annotatedModel.png)
 
 
+=======
+# THES
+>>>>>>> branch 'main' of https://github.com/laironx01/THES
