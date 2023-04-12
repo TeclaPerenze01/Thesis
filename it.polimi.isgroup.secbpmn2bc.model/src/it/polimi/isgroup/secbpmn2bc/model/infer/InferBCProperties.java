@@ -3,6 +3,7 @@ package it.polimi.isgroup.secbpmn2bc.model.infer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
@@ -182,7 +183,7 @@ public class InferBCProperties {
 		}
 
 		messages.add(new ConsoleMessage(Severity.INFORMATION, null, "Finished evaluating security annotations"));
-		System.out.println("Finished evaluating security annotations");
+		System.out.println("Finished 1 evaluating security annotations");
 		System.out.println(result);
 
 		propagateUp((GMTNode) def, result, messages, override);
@@ -198,7 +199,7 @@ public class InferBCProperties {
 		}
 
 		messages.add(new ConsoleMessage(Severity.INFORMATION, null, "Finished determining admissible properties"));
-		System.out.println("Finished determining admissible properties");
+		System.out.println("Finished  3 determining admissible properties");
 		System.out.println(result);
 
 		return messages;
@@ -306,16 +307,34 @@ public class InferBCProperties {
 
 	}
 	/*
-	 * the propagateup function create for each node a set Stemp taht is the set of
-	 * all the combinations excluding the local ones, once the set
-	 * has been created, it's gonna be splitted by the function generateSubset
-	 *
+	 * This function takes in four parameters: a GMTNode object, a HashMap object
+	 * that maps a string to a List of Combination objects, a List of ConsoleMessage
+	 * objects, and a Boolean variable "override". returns a List of Combination
+	 * objects. If the "override" variable is false, it calls a function named
+	 * "constrain" to constrain the localCombinations based on the current property
+	 * assignments of the GMTNode object. Then, it checks if the localCombinations
+	 * is not null and loops through each Combination object in localCombinations.
+	 * Inside the loop, it checks the type of the GMTNode object and adds a new
+	 * Combination object to the parentCombinations based on the type of the GMTNode
+	 * object and the attributes of the current Combination object. Next, the
+	 * function loops through each child GMTNode object of the current GMTNode
+	 * object and recursively calls the "propagateUp" function on each child. If the
+	 * "childConstraints" is not null loops through each Combination object in
+	 * "childConstraints". Inside the loop, it checks the type of the GMTNode object
+	 * and adds a new Combination object to the "tempConstraints" based on the type
+	 * of the GMTNode object and the attributes of the current Combination object.
+	 * Then, the function generates all possible subsets of the "tempConstraints"
+	 * list and adds them to the "upCombinations" list. After that, the function
+	 * constrains the "upCombinations" list based on the "parentCombinations" list
+	 * and stores the result in the "finals" list. The final list correspond to the
+	 * update combinations of the parent node.
 	 **/
 
-	private List<List<Combination>> propagateUp(GMTNode node, HashMap<String, List<Combination>> sets,
+	private List<Combination> propagateUp(GMTNode node, HashMap<String, List<Combination>> sets,
 			List<ConsoleMessage> messages, Boolean override) {
 		List<List<Combination>> upCombinations = new ArrayList<>();
 		List<Combination> localCombinations = sets.get(node.getUuid());
+		List<Combination> finals = new ArrayList<>();
 
 		if (!override) {
 			// Constrain combinations based on current property assignments
@@ -369,24 +388,22 @@ public class InferBCProperties {
 						upCombinations.addAll(subsets);
 					}
 
-					// aggiorna nodo con tutti i set di s up aggiornati con i costraint di S parents
+					// add to finals all the admissible combinations.
 					if (!upCombinations.isEmpty()) {
-						constrainSet(upCombinations,parentCombinations);
-						
-						System.out.println("Analyzing: "+node.getUuid());
-						System.out.println("Upward Propagation Combinations: "+upCombinations);
+						finals = constrainSet(upCombinations, parentCombinations);
+
+						System.out.println("Analyzing: " + node.getUuid());
+						System.out.println("Upward Propagation Combinations: " + upCombinations);
+						System.out.println("Finals Propagation Combinations: " + finals);
 					}
 				}
 
 			}
 		}
-		
-		return upCombinations;
+
+		return finals;
 	}
 
-	
-
-	
 	/*
 	 * The generateSubsets() function takes Stemp as input and returns a list of
 	 * lists of combination. The generateSubsetsHelper() function is a recursive
@@ -417,38 +434,42 @@ public class InferBCProperties {
 		}
 	}
 
+	/*
+	 * The function iterates over each list of Combination objects in the
+	 * constraints parameter, and for each Combination object in the constraintList,
+	 * it checks whether it satisfies any of the Combination objects in the list
+	 * parameter. If a Combination object in the list parameter satisfies the
+	 * constraint, then the globalenforcement value of the constraint is updated. If
+	 * a constraint is satisfied, it is added to the result list, and duplicates are
+	 * removed using a HashSet.
+	 */
 
-	
-
-	private void constrainSet(List<List<Combination>> constraints, List<Combination> list ) {
-		List<Combination> toRemove = new ArrayList<>();
+	private List<Combination> constrainSet(List<List<Combination>> constraints, List<Combination> list) {
+		List<Combination> result = new ArrayList<>();
 		for (List<Combination> constraintList : constraints) {
 			for (Combination c : constraintList) {
-				boolean found = false;
+				boolean found = true;
 				for (Combination i : list) {
 					if (c.satisfies(i)) {
-						c.globalenforcement= (c.globalenforcement + i.globalenforcement)/2;
+						c.globalenforcement = (c.globalenforcement + i.globalenforcement) / 2;
 						found = true;
 						break;
 					}
 				}
 				if (found) {
+					result.add(c);
+
+				}
+				if (!found) {
 					break;
-
 				}
-					if (!found) {
-						toRemove.add(c);
-					}
-				}
-				}
-		constraints.removeAll(toRemove);
 			}
-
-		
-
+		}
+		return new ArrayList<>(new HashSet<>(result));
+	}
 
 	/*
-	 * confronta ogni
+	 * unisce sup and s parents in s final e prende best combination da quest
 	 * 
 	 */
 
@@ -458,11 +479,11 @@ public class InferBCProperties {
 		// parent vincolato, figlio libero -> vincola figlio
 		// parent libero, figlio libero -> non fare nulla
 
-		System.out.println();
-		System.out.println("Analyzing: " + node.getUuid());
-
 		List<Combination> nodeCombinations = sets.get(node.getUuid());
 		List<Combination> parentCombinations;
+
+		System.out.println();
+		System.out.println("Analyzing: " + node.getUuid());
 
 		if (node.getParent() != null) {
 			parentCombinations = new ArrayList<Combination>();
@@ -480,33 +501,22 @@ public class InferBCProperties {
 				}
 			}
 
-			// some combinations exist for parent node
-			if (parentCombinations != null)
-				// some combinations exist for current node
-				if (nodeCombinations != null)
-					constrain(nodeCombinations, parentCombinations);
-				// no combinations exist for current node
-				else
-					nodeCombinations = parentCombinations;
+			System.out.println("Current combinations: " + sets.get(node.getUuid()));
+			System.out.println("Parent combinations: " + parentCombinations);
 
-			// no combinations exist for parent node, do nothing
+			if (findBest) {
+				Combination best = getBestCombination(nodeCombinations);
+
+				if (best != null)
+					sets.put(node.getUuid(), new ArrayList<Combination>(Arrays.asList(best)));
+
+				System.out.println("Best combination: " + sets.get(node.getUuid()));
+			} else
+				sets.put(node.getUuid(), nodeCombinations);
+
+			for (GMTNode child : node.getNodes())
+				propagateDown(child, sets, findBest);
 		}
-
-		System.out.println("Current combinations: " + sets.get(node.getUuid()));
-		System.out.println("Local combinations: " + nodeCombinations);
-
-		if (findBest) {
-			Combination best = getBestCombination(nodeCombinations);
-
-			if (best != null)
-				sets.put(node.getUuid(), new ArrayList<Combination>(Arrays.asList(best)));
-
-			System.out.println("Best combination: " + sets.get(node.getUuid()));
-		} else
-			sets.put(node.getUuid(), nodeCombinations);
-
-		for (GMTNode child : node.getNodes())
-			propagateDown(child, sets, findBest);
 	}
 
 	private List<Combination> constrain(List<Combination> nodeCombinations, GMTNode node) {
@@ -517,61 +527,67 @@ public class InferBCProperties {
 				if (((Definitions) node).getBlockchainType() != BlockchainType.UNDEFINED) {
 					if (((Definitions) node).getOnChainModel() != null)
 						result.add(new Combination(((Definitions) node).getBlockchainType(),
-								((Definitions) node).getOnChainModel(), Enforcement.NATIVE));
+								((Definitions) node).getOnChainModel(), Enforcement.NATIVE,
+								GlobalEnforcement.NATIVE.getValue()));
 					else {
-						result.add(new Combination(((Definitions) node).getBlockchainType(), true, Enforcement.NATIVE));
-						result.add(
-								new Combination(((Definitions) node).getBlockchainType(), false, Enforcement.NATIVE));
+						result.add(new Combination(((Definitions) node).getBlockchainType(), true, Enforcement.NATIVE,
+								GlobalEnforcement.NATIVE.getValue()));
+						result.add(new Combination(((Definitions) node).getBlockchainType(), false, Enforcement.NATIVE,
+								GlobalEnforcement.NATIVE.getValue()));
 					}
 				} else {
 					if (((Definitions) node).getOnChainModel() != null) {
 						result.add(new Combination(BlockchainType.PUBLIC, ((Definitions) node).getOnChainModel(),
-								Enforcement.NATIVE));
+								Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 						result.add(new Combination(BlockchainType.PRIVATE, ((Definitions) node).getOnChainModel(),
-								Enforcement.NATIVE));
+								Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 					} else {
-						result.add(new Combination(BlockchainType.PUBLIC, true, Enforcement.NATIVE));
-						result.add(new Combination(BlockchainType.PUBLIC, false, Enforcement.NATIVE));
-						result.add(new Combination(BlockchainType.PRIVATE, true, Enforcement.NATIVE));
-						result.add(new Combination(BlockchainType.PRIVATE, false, Enforcement.NATIVE));
+						result.add(new Combination(BlockchainType.PUBLIC, true, Enforcement.NATIVE,
+								GlobalEnforcement.NATIVE.getValue()));
+						result.add(new Combination(BlockchainType.PUBLIC, false, Enforcement.NATIVE,
+								GlobalEnforcement.NATIVE.getValue()));
+						result.add(new Combination(BlockchainType.PRIVATE, true, Enforcement.NATIVE,
+								GlobalEnforcement.NATIVE.getValue()));
+						result.add(new Combination(BlockchainType.PRIVATE, false, Enforcement.NATIVE,
+								GlobalEnforcement.NATIVE.getValue()));
 					}
 				}
 			}
 			if (node instanceof SubProcess)
 				if (((SubProcess) node).getOnChainModel() != null) {
 					result.add(new Combination(BlockchainType.PRIVATE, ((SubProcess) node).getOnChainModel(),
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 					result.add(new Combination(BlockchainType.PUBLIC, ((SubProcess) node).getOnChainModel(),
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 				}
 			if (node instanceof Process)
 				if (((Process) node).getOnChainModel() != null) {
 					result.add(new Combination(BlockchainType.PRIVATE, ((Process) node).getOnChainModel(),
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 					result.add(new Combination(BlockchainType.PUBLIC, ((Process) node).getOnChainModel(),
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 				}
 			if (node instanceof DataItems)
 				if (((DataItems) node).getOnChainData() != OnChainData.UNDEFINED) {
 					result.add(new Combination(((DataItems) node).getOnChainData(), BlockchainType.PRIVATE, true,
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 					result.add(new Combination(((DataItems) node).getOnChainData(), BlockchainType.PUBLIC, true,
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 					result.add(new Combination(((DataItems) node).getOnChainData(), BlockchainType.PRIVATE, false,
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 					result.add(new Combination(((DataItems) node).getOnChainData(), BlockchainType.PUBLIC, false,
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 				}
 			if (node instanceof Task)
 				if (((Task) node).getOnChainExecution() != null) {
 					result.add(new Combination(((Task) node).getOnChainExecution(), BlockchainType.PRIVATE, true,
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 					result.add(new Combination(((Task) node).getOnChainExecution(), BlockchainType.PUBLIC, true,
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 					result.add(new Combination(((Task) node).getOnChainExecution(), BlockchainType.PRIVATE, false,
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 					result.add(new Combination(((Task) node).getOnChainExecution(), BlockchainType.PUBLIC, false,
-							Enforcement.NATIVE));
+							Enforcement.NATIVE, GlobalEnforcement.NATIVE.getValue()));
 				}
 			if (result.size() == 0)
 				return null;
@@ -604,8 +620,22 @@ public class InferBCProperties {
 		}
 		return result;
 	}
-
+	
+	
 	private Combination getBestCombination(List<Combination> nodeCombinations) {
+		Combination best = null;
+		for(Combination c : nodeCombinations) {
+			best = c;
+		}
+						
+		return best;
+	}
+	 //devi creare metodo che se il nodo è figlio, la best combination deve essere tra tutte quelle presenti nel S temp quelle compatibili
+	//con la best del genitore e una volta trovata, fare i constraint per selezionare quella del set di partenza
+	
+	
+
+	/*private Combination getBestCombination(List<Combination> nodeCombinations) {
 		Combination c = getSubSet(nodeCombinations, Enforcement.NATIVE);
 		if (c != null)
 			return c;
@@ -662,5 +692,5 @@ public class InferBCProperties {
 			}
 		}
 		return newSet;
-	}
+	}*/
 }

@@ -16,12 +16,12 @@ public class FlowEnforceabilityInference implements SecurityAnnotationInference 
 		List<Combination> result = new ArrayList<Combination>();
 		
 		//bc any, model true, partial enf
-		result.add(new Combination(BlockchainType.PUBLIC,true,Enforcement.POSSIBLE));
-		result.add(new Combination(BlockchainType.PRIVATE,true,Enforcement.POSSIBLE));
+		result.add(new Combination(BlockchainType.PUBLIC,true,Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
+		result.add(new Combination(BlockchainType.PRIVATE,true,Enforcement.POSSIBLE, GlobalEnforcement.POSSIBLE.getValue()));
 		
 		//bc any, model false, no enf
-		result.add(new Combination(BlockchainType.PUBLIC,false,Enforcement.NO_ENFORCEMENT));
-		result.add(new Combination(BlockchainType.PRIVATE,false,Enforcement.NO_ENFORCEMENT));
+		result.add(new Combination(BlockchainType.PUBLIC,false,Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
+		result.add(new Combination(BlockchainType.PRIVATE,false,Enforcement.NO_ENFORCEMENT, GlobalEnforcement.NOENF.getValue()));
 		
 		return result;
 	}
