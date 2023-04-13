@@ -9,46 +9,46 @@ public class Combination {
 	public BlockchainType blockchainType;
 	public Boolean onChainModel;
 	public Enforcement enforcement;
-	public double globalenforcement;
+	public double globalEnforcement;
 	
 	//set for tasks
-	public Combination(Boolean onChainExecution, BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement , double globalenforcement){
+	public Combination(Boolean onChainExecution, BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement , double globalEnforcement){
 		this.onChainExecution = onChainExecution;
 		this.onChainData = null;
 		this.blockchainType = blockchainType;
 		this.onChainModel = onChainModel;
 		this.enforcement = enforcement;
-		this.globalenforcement = globalenforcement;
+		this.globalEnforcement = globalEnforcement;
 	}
 	
 	//set for dataitems
-	public Combination(OnChainData onChainData, BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement, double globalenforcement){
+	public Combination(OnChainData onChainData, BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement, double globalEnforcement){
 		this.onChainExecution = null;
 		this.onChainData = onChainData;
 		this.blockchainType = blockchainType;
 		this.onChainModel = onChainModel;
 		this.enforcement = enforcement;
-		this.globalenforcement = globalenforcement;
+		this.globalEnforcement = globalEnforcement;
 	}
 	
 	//set for processes and subprocesses
-	public Combination(BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement,double globalenforcement){
+	public Combination(BlockchainType blockchainType, Boolean onChainModel, Enforcement enforcement,double globalEnforcement){
 		this.onChainExecution = null;
 		this.onChainData = null;
 		this.blockchainType = blockchainType;
 		this.onChainModel = onChainModel;
 		this.enforcement = enforcement;
-		this.globalenforcement = globalenforcement;
+		this.globalEnforcement = globalEnforcement;
 	}
 	
 	//set for definitions
-	public Combination(BlockchainType blockchainType, Enforcement enforcement,double globalenforcement){
+	public Combination(BlockchainType blockchainType, Enforcement enforcement,double globalEnforcement){
 		this.onChainExecution = null;
 		this.onChainData = null;
 		this.blockchainType = blockchainType;
 		this.onChainModel = null;
 		this.enforcement = enforcement;
-		this.globalenforcement = globalenforcement;
+		this.globalEnforcement = globalEnforcement;
 	}
 	
 	//create a copy
@@ -58,14 +58,14 @@ public class Combination {
 		this.blockchainType = original.blockchainType;
 		this.onChainModel = original.onChainModel;
 		this.enforcement = original.enforcement;
-		this.globalenforcement = original.globalenforcement;
+		this.globalEnforcement = original.globalEnforcement;
 	}
 		
 	public String toString(){
 		if(onChainExecution != null)
-			return "{onChainExecution: " + onChainExecution + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement +",globalEnforcement: "+ globalenforcement +"}";
+			return "{onChainExecution: " + onChainExecution + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement +",globalEnforcement: "+ globalEnforcement +"}";
 		else if (onChainData != null)
-			return "{onChainData: " + onChainData + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + ",globalEnforcement: "+ globalenforcement +"}";
+			return "{onChainData: " + onChainData + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + ",globalEnforcement: "+ globalEnforcement +"}";
 		else
 			return "{blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + ",globalEnforcement: \"+ globalenforcement +\"}";
 	}

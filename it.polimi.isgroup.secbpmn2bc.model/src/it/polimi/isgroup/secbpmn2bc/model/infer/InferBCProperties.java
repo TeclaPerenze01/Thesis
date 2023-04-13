@@ -39,6 +39,19 @@ public class InferBCProperties {
 		return false;
 	}
 
+	/**
+	 * 
+	 * Annotates the given Resource with admissible combinations and best
+	 * assignments for each element.
+	 * 
+	 * @param resource the Resource to be annotated
+	 * 
+	 * @param override a Boolean indicating whether to override existing assignments
+	 *                 or not
+	 * 
+	 * @return a list of ConsoleMessage objects containing information about the
+	 *         annotation process
+	 */
 	public List<ConsoleMessage> annotate(Resource resource, Boolean override) {
 
 		Definitions def = (Definitions) resource.getContents().get(0);
@@ -61,7 +74,16 @@ public class InferBCProperties {
 
 		return messages;
 	}
-
+	
+	/**
+	 * 
+	 * Check constraints for a given resource by determining admissible combinations
+	 * and propagating them down the process hierarchy.
+	 * @param resource The resource to check constraints for.
+	 * 
+	 * @return A list of ConsoleMessages indicating any warnings or errors found
+	 *         during constraint checking.
+	 */
 	public List<ConsoleMessage> checkConstraint(Resource resource) {
 
 		Definitions def = (Definitions) resource.getContents().get(0);
@@ -183,7 +205,7 @@ public class InferBCProperties {
 		}
 
 		messages.add(new ConsoleMessage(Severity.INFORMATION, null, "Finished evaluating security annotations"));
-		System.out.println("Finished 1 evaluating security annotations");
+		System.out.println("Finished evaluating security annotations");
 		System.out.println(result);
 
 		propagateUp((GMTNode) def, result, messages, override);
@@ -199,7 +221,7 @@ public class InferBCProperties {
 		}
 
 		messages.add(new ConsoleMessage(Severity.INFORMATION, null, "Finished determining admissible properties"));
-		System.out.println("Finished  3 determining admissible properties");
+		System.out.println("Finished determining admissible properties");
 		System.out.println(result);
 
 		return messages;
@@ -306,184 +328,166 @@ public class InferBCProperties {
 		}
 
 	}
-	/*
-	 * This function takes in four parameters: a GMTNode object, a HashMap object
-	 * that maps a string to a List of Combination objects, a List of ConsoleMessage
-	 * objects, and a Boolean variable "override". returns a List of Combination
-	 * objects. If the "override" variable is false, it calls a function named
-	 * "constrain" to constrain the localCombinations based on the current property
-	 * assignments of the GMTNode object. Then, it checks if the localCombinations
-	 * is not null and loops through each Combination object in localCombinations.
-	 * Inside the loop, it checks the type of the GMTNode object and adds a new
-	 * Combination object to the parentCombinations based on the type of the GMTNode
-	 * object and the attributes of the current Combination object. Next, the
-	 * function loops through each child GMTNode object of the current GMTNode
-	 * object and recursively calls the "propagateUp" function on each child. If the
-	 * "childConstraints" is not null loops through each Combination object in
-	 * "childConstraints". Inside the loop, it checks the type of the GMTNode object
-	 * and adds a new Combination object to the "tempConstraints" based on the type
-	 * of the GMTNode object and the attributes of the current Combination object.
-	 * Then, the function generates all possible subsets of the "tempConstraints"
-	 * list and adds them to the "upCombinations" list. After that, the function
-	 * constrains the "upCombinations" list based on the "parentCombinations" list
-	 * and stores the result in the "finals" list. The final list correspond to the
-	 * update combinations of the parent node.
-	 **/
 
+	/**
+	 * Propagates up the security constraints from the children to the parent node.
+	 * 
+	 * @param node     the parent node to update with propagated constraints
+	 * @param sets     the map of security constraint sets for each node uuid
+	 * @param messages the list of console messages to append errors or warnings
+	 * @param override whether to override the local constraints with the propagated
+	 *                 ones
+	 * @return the list of propagated combinations for the parent node
+	 */
 	private List<Combination> propagateUp(GMTNode node, HashMap<String, List<Combination>> sets,
-			List<ConsoleMessage> messages, Boolean override) {
-		List<List<Combination>> upCombinations = new ArrayList<>();
+			List<ConsoleMessage> messages, boolean override) {
+
+		List<Combination> parentCombinations = null;
 		List<Combination> localCombinations = sets.get(node.getUuid());
-		List<Combination> finals = new ArrayList<>();
+		List<List<Combination>> upCombinations = new ArrayList<>();
+		List<Combination> finalCombinations = new ArrayList<>();
 
 		if (!override) {
-			// Constrain combinations based on current property assignments
 			localCombinations = constrain(localCombinations, node);
 		}
 
 		if (localCombinations != null) {
-			List<Combination> parentCombinations = new ArrayList<>();
-
-			for (Combination c : localCombinations) {
+			parentCombinations = new ArrayList<>();
+			for (Combination localCombination : localCombinations) {
 				if (node instanceof Task || node instanceof DataItems) {
-					// Select attributes not specific for a task or data item
 					parentCombinations
-							.add(new Combination(c.blockchainType, c.onChainModel, c.enforcement, c.globalenforcement));
+							.add(new Combination(localCombination.blockchainType, localCombination.onChainModel,
+									localCombination.enforcement, localCombination.globalEnforcement));
 				} else if (node instanceof Process || node instanceof SubProcess) {
-					// Select attributes not specific for a process or subprocess
-					parentCombinations.add(new Combination(c.blockchainType, c.enforcement, c.globalenforcement));
+					parentCombinations.add(new Combination(localCombination.blockchainType,
+							localCombination.enforcement, localCombination.globalEnforcement));
 				} else if (!(node instanceof Definitions)) {
-					// Select all attributes
-					parentCombinations.add(new Combination(c));
+					parentCombinations.add(new Combination(localCombination));
 				}
-			}
-			// constraint if the node is a parent
-			for (GMTNode child : node.getNodes()) {
-				List<Combination> childConstraints = propagateUp(child, sets, messages, override);
-
-				if (childConstraints != null) {
-					List<Combination> tempConstraints = new ArrayList<>();
-
-					// Compute constraints list
-					for (Combination cc : childConstraints) {
-						if (node instanceof Process || node instanceof SubProcess) {
-							tempConstraints
-									.add(new Combination(cc.blockchainType, cc.enforcement, cc.globalenforcement));
-						} else if (node instanceof Definitions) {
-							// Local attributes are blockchainType and onChainModel
-							tempConstraints.add(new Combination(cc.blockchainType, cc.onChainModel, cc.enforcement,
-									cc.globalenforcement));
-						} else if (node instanceof Task || node instanceof DataItems) {
-							tempConstraints.add(new Combination(cc.blockchainType, cc.onChainModel, cc.enforcement,
-									cc.globalenforcement));
-						} else {
-							// All attributes must be propagated
-							tempConstraints.add(new Combination(cc));
-						}
-					}
-
-					// Current node has some combinations
-					if (!tempConstraints.isEmpty()) {
-						List<List<Combination>> subsets = generateSubsets(tempConstraints);
-						upCombinations.addAll(subsets);
-					}
-
-					// add to finals all the admissible combinations.
-					if (!upCombinations.isEmpty()) {
-						finals = constrainSet(upCombinations, parentCombinations);
-
-						System.out.println("Analyzing: " + node.getUuid());
-						System.out.println("Upward Propagation Combinations: " + upCombinations);
-						System.out.println("Finals Propagation Combinations: " + finals);
-					}
-				}
-
 			}
 		}
 
-		return finals;
-	}
-
-	/*
-	 * The generateSubsets() function takes Stemp as input and returns a list of
-	 * lists of combination. The generateSubsetsHelper() function is a recursive
-	 * function that generates all possible subsets of the input list. The function
-	 * starts by adding the current subset to the list of subsets. Then it loops
-	 * through the input list, starting at the specified index, and adds each
-	 * element to the current subset if it is not already in the subset. It then
-	 * recursively calls itself with the updated current subset and the next index.
-	 * Once all subsets have been generated, the function returns the list of subset
-	 */
-
-	public static List<List<Combination>> generateSubsets(List<Combination> inputList) {
-		List<List<Combination>> subsets = new ArrayList<>();
-		avoidRepetition(inputList, subsets, new ArrayList<>(), 0);
-		return subsets;
-	}
-
-	private static void avoidRepetition(List<Combination> inputList, List<List<Combination>> subsets,
-			List<Combination> currentSubset, int start) {
-		subsets.add(new ArrayList<>(currentSubset));
-
-		for (int i = start; i < inputList.size(); i++) {
-			if (!currentSubset.contains(inputList.get(i))) {
-				currentSubset.add(inputList.get(i));
-				avoidRepetition(inputList, subsets, currentSubset, i + 1);
-				currentSubset.remove(currentSubset.size() - 1);
+		for (GMTNode child : node.getNodes()) {
+			List<Combination> childConstraints = propagateUp(child, sets, messages, override);
+			if (childConstraints != null && !childConstraints.isEmpty()) {
+				List<Combination> tempConstraints = new ArrayList<>();
+				for (Combination childCombination : childConstraints) {
+					if (node instanceof Task) {
+						tempConstraints
+								.add(new Combination(childCombination.blockchainType, childCombination.onChainModel,
+										childCombination.enforcement, childCombination.globalEnforcement));
+					} else if (node instanceof DataItems) {
+						tempConstraints
+								.add(new Combination(childCombination.blockchainType, childCombination.onChainModel,
+										childCombination.enforcement, childCombination.globalEnforcement));
+					} else if (node instanceof Process || node instanceof SubProcess) {
+						tempConstraints.add(new Combination(childCombination.blockchainType,
+								childCombination.enforcement, childCombination.globalEnforcement));
+					} else {
+						tempConstraints.add(new Combination(childCombination));
+					}
+				}
+				if (!tempConstraints.isEmpty()) {
+					upCombinations.addAll(splitCombination(tempConstraints));
+				}
 			}
+		}
+
+		if (!upCombinations.isEmpty()) {
+			finalCombinations = constrainSet(upCombinations, parentCombinations);
+		} else {
+			System.out.println("Errors were found evaluating security annotations");
+			messages.add(new ConsoleMessage(Severity.ERROR, node.getUuid(),
+					"Conflicting privacy constraints hold for element "));
+			// TODO: decide whether to terminate the function.
+		}
+
+		sets.put(node.getUuid(), localCombinations);
+		System.out.println("Analyzing: " + node.getUuid());
+		System.out.println("Parent combinations: " + parentCombinations);
+		System.out.println("Local combinations: " + localCombinations);
+
+		return finalCombinations;
+	}
+
+	public static List<List<Combination>> splitCombination(List<Combination> input) {
+		List<List<Combination>> output = new ArrayList<>();
+		avoidRepetition(input, new ArrayList<>(), output);
+		return output;
+	}
+
+	private static void avoidRepetition(List<Combination> input, List<Combination> current,
+			List<List<Combination>> output) {
+		if (current.size() > 0) {
+			output.add(new ArrayList<>(current));
+		}
+
+		for (int i = 0; i < input.size(); i++) {
+			// Avoid duplicate elements in the current combination
+			if (current.contains(input.get(i))) {
+				continue;
+			}
+			current.add(input.get(i));
+			List<Combination> remaining = new ArrayList<>();
+			for (int j = i + 1; j < input.size(); j++) {
+				remaining.add(input.get(j));
+			}
+			avoidRepetition(remaining, current, output);
+			current.remove(current.size() - 1);
 		}
 	}
 
-	/*
-	 * The function iterates over each list of Combination objects in the
-	 * constraints parameter, and for each Combination object in the constraintList,
-	 * it checks whether it satisfies any of the Combination objects in the list
-	 * parameter. If a Combination object in the list parameter satisfies the
-	 * constraint, then the globalenforcement value of the constraint is updated. If
-	 * a constraint is satisfied, it is added to the result list, and duplicates are
-	 * removed using a HashSet.
+	/**
+	 * Filters a list of sets of combinations by checking whether each combination
+	 * satisfies the parent constraints. If a combination satisfies a constraint,
+	 * the constraint's global enforcement value is updated. Returns a list of
+	 * combinations that satisfy at least one constraint.
+	 *
+	 * @param sets        the sets of combinations to filter
+	 * @param constraints the constraints to check against
+	 * @return a list of combinations that satisfy the constraint
 	 */
+	private List<Combination> constrainSet(List<List<Combination>> sets, List<Combination> constraints) {
+		List<Combination> toAdd = new ArrayList<>();
 
-	private List<Combination> constrainSet(List<List<Combination>> constraints, List<Combination> list) {
-		List<Combination> result = new ArrayList<>();
-		for (List<Combination> constraintList : constraints) {
-			for (Combination c : constraintList) {
-				boolean found = true;
-				for (Combination i : list) {
-					if (c.satisfies(i)) {
-						c.globalenforcement = (c.globalenforcement + i.globalenforcement) / 2;
-						found = true;
+		for (List<Combination> set : sets) {
+			for (Combination combination : set) {
+				boolean satisfiesConstraint = false;
+				for (Combination constraint : constraints) {
+					if (combination.satisfies(constraint)) {
+						constraint.globalEnforcement = (constraint.globalEnforcement + combination.globalEnforcement)
+								/ 2;
+						satisfiesConstraint = true;
 						break;
 					}
 				}
-				if (found) {
-					result.add(c);
-
-				}
-				if (!found) {
-					break;
+				if (satisfiesConstraint) {
+					toAdd.add(combination);
 				}
 			}
 		}
-		return new ArrayList<>(new HashSet<>(result));
+
+		return toAdd;
 	}
 
-	/*
-	 * unisce sup and s parents in s final e prende best combination da quest
+	/**
+	 * This function takes a GMTNode object and a HashMap containing a list of
+	 * Combination objects for each node,propagates the combinations down to the child nodes. It analyzes the
+	 * node, retrieves the parent combinations,compares them to the current combinations, finds the best combination (if
+	 * specified), and updates the HashMap with the propagated combinations. If findBest is true, it also finds the best last
+	 * combination for nodes without child.
 	 * 
+	 * @param node     The GMTNode to analyze and propagate combinations for
+	 * @param sets     The HashMap containing lists of Combination objects for each node
+	 * @param findBest A boolean value specifying whether to find the best combination or not
 	 */
-
 	private void propagateDown(GMTNode node, HashMap<String, List<Combination>> sets, Boolean findBest) {
-		// parent vincolato, figlio vincolato -> calcola
-		// parent libero, figlio vincolato -> non fare nulla
-		// parent vincolato, figlio libero -> vincola figlio
-		// parent libero, figlio libero -> non fare nulla
-
-		List<Combination> nodeCombinations = sets.get(node.getUuid());
-		List<Combination> parentCombinations;
 
 		System.out.println();
 		System.out.println("Analyzing: " + node.getUuid());
+
+		List<Combination> nodeCombinations = sets.get(node.getUuid());
+		List<Combination> parentCombinations;
 
 		if (node.getParent() != null) {
 			parentCombinations = new ArrayList<Combination>();
@@ -493,19 +497,26 @@ public class InferBCProperties {
 			for (Combination parentCombination : sets.get(node.getParent().getUuid())) {
 				if (node instanceof Process || node instanceof SubProcess) {
 					parentCombinations.add(new Combination(parentCombination.blockchainType,
-							parentCombination.enforcement, parentCombination.globalenforcement));
+							parentCombination.enforcement, parentCombination.globalEnforcement));
 				} else {
 					parentCombinations
 							.add(new Combination(parentCombination.blockchainType, parentCombination.onChainModel,
-									parentCombination.enforcement, parentCombination.globalenforcement));
+									parentCombination.enforcement, parentCombination.globalEnforcement));
 				}
 			}
 
 			System.out.println("Current combinations: " + sets.get(node.getUuid()));
-			System.out.println("Parent combinations: " + parentCombinations);
+			System.out.println("Local combinations: " + nodeCombinations);
 
 			if (findBest) {
 				Combination best = getBestCombination(nodeCombinations);
+
+				if (node.getNodes().isEmpty()) {
+					Combination best1 = getBestLastCombination(nodeCombinations);
+					if (best1 != null)
+						sets.put(node.getUuid(), new ArrayList<Combination>(Arrays.asList(best1)));
+
+				}
 
 				if (best != null)
 					sets.put(node.getUuid(), new ArrayList<Combination>(Arrays.asList(best)));
@@ -516,9 +527,24 @@ public class InferBCProperties {
 
 			for (GMTNode child : node.getNodes())
 				propagateDown(child, sets, findBest);
+
 		}
 	}
 
+	/**
+	 * 
+	 * This private method constrains the admissible combinations based on a GMT
+	 * node and a list of combinations. If the list of combinations is null, it
+	 * creates a list of admissible combinations for the given node. Otherwise, it
+	 * filters the admissible combinations from the given list of combinations for
+	 * the given node.
+	 * 
+	 * @param nodeCombinations The list of combinations to filter (null to create a
+	 *                         new list).
+	 * @param node             The GMT node to filter the combinations for.
+	 * @return A list of admissible combinations for the given node based on the
+	 *         given list of combinations.
+	 */
 	private List<Combination> constrain(List<Combination> nodeCombinations, GMTNode node) {
 		List<Combination> result = new ArrayList<Combination>();
 		if (nodeCombinations == null) {
@@ -620,77 +646,57 @@ public class InferBCProperties {
 		}
 		return result;
 	}
+
 	
 	
 	private Combination getBestCombination(List<Combination> nodeCombinations) {
 		Combination best = null;
-		for(Combination c : nodeCombinations) {
+		for (Combination c : nodeCombinations) {
 			best = c;
 		}
-						
 		return best;
 	}
-	 //devi creare metodo che se il nodo è figlio, la best combination deve essere tra tutte quelle presenti nel S temp quelle compatibili
-	//con la best del genitore e una volta trovata, fare i constraint per selezionare quella del set di partenza
-	
-	
 
-	/*private Combination getBestCombination(List<Combination> nodeCombinations) {
+	public Combination getBestLastCombination(List<Combination> nodeCombinations) {
 		Combination c = getSubSet(nodeCombinations, Enforcement.NATIVE);
-		if (c != null)
+		if (c != null) {
 			return c;
+		}
 		c = getSubSet(nodeCombinations, Enforcement.POSSIBLE);
-		if (c != null)
+		if (c != null) {
 			return c;
+		}
 		c = getSubSet(nodeCombinations, Enforcement.NO_ENFORCEMENT);
 		return c;
 	}
 
-	private Combination getSubSet(List<Combination> nodeCombinations, Enforcement enforcement) {
+	public Combination getSubSet(List<Combination> nodeCombinations, Enforcement enforcement) {
+		Combination maxEnforcementCombination = null;
 		for (Combination c : nodeCombinations) {
-			if (c.enforcement == enforcement)
-				return c;
-		}
-		return null;
-	}
-
-	private void constrain(List<Combination> list, List<Combination> constraints) {
-		List<Combination> toRemove = new ArrayList<Combination>();
-		for (Combination i : list) {
-			Boolean found = false;
-			for (Combination c : constraints) {
-				if (i.satisfies(c)) {
-					found = true;
-					break;
+			if (c.enforcement == enforcement) {
+				if (maxEnforcementCombination == null
+						|| c.globalEnforcement > maxEnforcementCombination.globalEnforcement) {
+					maxEnforcementCombination = c;
 				}
 			}
-			if (!(found)) {
-				toRemove.add(i);
-			}
 		}
-		for (Combination deleted : toRemove) {
-			list.remove(deleted);
-		}
+		return maxEnforcementCombination;
 	}
 
-	private List<Combination> factorize(List<Combination> combinations) {
-		List<Combination> newSet = new ArrayList<Combination>();
-		for (Combination oldC : combinations) {
-			boolean keep = true;
-			// check if a compatible combination is already present in new set
-			for (Combination newC : newSet) {
-				Combination moreStringent = oldC.compareTo(newC);
-				if (moreStringent != null) {
-					// replace current combination with more stringent one
-					newC = moreStringent;
-					keep = false;
-				}
-			}
-			// combination not present yet, add it
-			if (keep) {
-				newSet.add(oldC);
-			}
-		}
-		return newSet;
-	}*/
+	/*
+	 * private void constrain(List<Combination> list, List<Combination> constraints)
+	 * { List<Combination> toRemove = new ArrayList<Combination>(); for (Combination
+	 * i : list) { Boolean found = false; for (Combination c : constraints) { if
+	 * (i.satisfies(c)) { found = true; break; } } if (!(found)) { toRemove.add(i);
+	 * } } for (Combination deleted : toRemove) { list.remove(deleted); } }
+	 * 
+	 * private List<Combination> factorize(List<Combination> combinations) {
+	 * List<Combination> newSet = new ArrayList<Combination>(); for (Combination
+	 * oldC : combinations) { boolean keep = true; // check if a compatible
+	 * combination is already present in new set for (Combination newC : newSet) {
+	 * Combination moreStringent = oldC.compareTo(newC); if (moreStringent != null)
+	 * { // replace current combination with more stringent one newC =
+	 * moreStringent; keep = false; } } // combination not present yet, add it if
+	 * (keep) { newSet.add(oldC); } } return newSet; }
+	 */
 }
