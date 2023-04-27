@@ -61,15 +61,16 @@ public class InferBCProperties {
 
 		// Find admissible combinations for the whole process (check for indirect
 		// dependencies)
+		System.out.println(1);
 		List<ConsoleMessage> messages = determineAdmissibleCombinations(def, result, override);
-
+		System.out.println(2);
 		if (checkForErrors(messages)) {
-			return messages;
+		return messages;
 		}
-
+		System.out.println(3);
 		// Find best assignment for each element
 		propagateDown((GMTNode) def, result, true);
-
+		System.out.println(4);
 		setBCProperties(def, result);
 
 		return messages;
@@ -98,7 +99,7 @@ public class InferBCProperties {
 		if (checkForErrors(messages)) {
 			return messages;
 		}
-
+		System.out.println(1.1);
 		propagateDown((GMTNode) def, result, false);
 
 		System.out.println(result);
@@ -184,29 +185,33 @@ public class InferBCProperties {
 
 		List<GMTNode> nodes = ModelNavigator.getChildNodes(def);
 
-		System.out.println(nodes.toString());
+		//System.out.println("b" + nodes.toString());
 
 		// Find admissible combinations for each process element (independent from each
 		// other)
 		for (GMTNode node : nodes) {
-			System.out.println(node.toString());
+		//	System.out.println("a" + node.toString());
 			messages.addAll(inferElement(node, result));
+		//	System.out.println("initial set of " + node.getUuid() + result);;
+			
+			
 		}
 
-		System.out.println(messages.toString());
+	//	System.out.println("c" + messages.toString());
 
 		// Check if something went wrong, e.g., conflicting properties hold for the same
 		// element
 		if (checkForErrors(messages)) {
 			messages.add(new ConsoleMessage(Severity.ERROR, null, "Errors were found evaluating security annotations"));
 			System.out.println("Errors were found evaluating security annotations");
-			System.out.println(result);
+			
+			System.out.println("wrong set" + result);
 			return messages;
 		}
 
 		messages.add(new ConsoleMessage(Severity.INFORMATION, null, "Finished evaluating security annotations"));
 		System.out.println("Finished evaluating security annotations");
-		System.out.println(result);
+		System.out.println("right set" + result);
 
 		propagateUp((GMTNode) def, result, messages, override);
 
@@ -346,97 +351,172 @@ public class InferBCProperties {
 		List<Combination> localCombinations = sets.get(node.getUuid());
 		List<List<Combination>> upCombinations = new ArrayList<>();
 		List<Combination> finalCombinations = new ArrayList<>();
-
+		System.out.println("PROPAGATEUP");
 		if (!override) {
 			localCombinations = constrain(localCombinations, node);
+			
 		}
 
 		if (localCombinations != null) {
+			System.out.println("Analyzing: " + node.getUuid());
+			System.out.println("combinations after constraint with node: " + localCombinations);
+			
 			parentCombinations = new ArrayList<>();
-			for (Combination localCombination : localCombinations) {
+			for (Combination c : localCombinations) {
 				if (node instanceof Task || node instanceof DataItems) {
 					parentCombinations
-							.add(new Combination(localCombination.blockchainType, localCombination.onChainModel,
-									localCombination.enforcement, localCombination.globalEnforcement));
+							.add(new Combination(c.blockchainType,c.onChainModel,
+									c.enforcement, c.globalEnforcement));
 				} else if (node instanceof Process || node instanceof SubProcess) {
-					parentCombinations.add(new Combination(localCombination.blockchainType,
-							localCombination.enforcement, localCombination.globalEnforcement));
+					parentCombinations.add(new Combination(c.blockchainType,
+							c.enforcement, c.globalEnforcement));
 				} else if (!(node instanceof Definitions)) {
-					parentCombinations.add(new Combination(localCombination));
+					parentCombinations.add(new Combination(c));
 				}
 			}
 		}
+		System.out.println("combinazioni no locali: " + parentCombinations);
+		
 
 		for (GMTNode child : node.getNodes()) {
+			
 			List<Combination> childConstraints = propagateUp(child, sets, messages, override);
 			if (childConstraints != null && !childConstraints.isEmpty()) {
-				List<Combination> tempConstraints = new ArrayList<>();
-				for (Combination childCombination : childConstraints) {
-					if (node instanceof Task) {
-						tempConstraints
-								.add(new Combination(childCombination.blockchainType, childCombination.onChainModel,
-										childCombination.enforcement, childCombination.globalEnforcement));
+				System.out.println("TEMP");
+				List<Combination> parentConstraints = new ArrayList<>();
+				List<Combination> localConstraints = new ArrayList<Combination>();
+				//compute constraints list
+				for (Combination cc : childConstraints){
+					if (node instanceof Process || node instanceof SubProcess){
+						//local attribute is onChainModel
+						localConstraints.add(new Combination(cc.blockchainType,cc.onChainModel,cc.enforcement,cc.globalEnforcement));
+						//parent attribute is blockchainType
+						parentConstraints.add(new Combination(cc.blockchainType,cc.enforcement,cc.globalEnforcement));
+					} else if (node instanceof Definitions) {
+						//local attributes are blockchainType and onChainModel
+						localConstraints.add(new Combination(cc.blockchainType,cc.onChainModel,cc.enforcement,cc.globalEnforcement)); 
+					} else if (node instanceof Task) {
+						//local attribute is onChainExecution
+						localConstraints.add(new Combination(cc.onChainExecution,cc.blockchainType,cc.onChainModel,cc.enforcement,cc.globalEnforcement));
+						//parent attributes are blockchainType and onChainModel
+						parentConstraints.add(new Combination(cc.blockchainType,cc.onChainModel,cc.enforcement,cc.globalEnforcement));
 					} else if (node instanceof DataItems) {
-						tempConstraints
-								.add(new Combination(childCombination.blockchainType, childCombination.onChainModel,
-										childCombination.enforcement, childCombination.globalEnforcement));
-					} else if (node instanceof Process || node instanceof SubProcess) {
-						tempConstraints.add(new Combination(childCombination.blockchainType,
-								childCombination.enforcement, childCombination.globalEnforcement));
+						//local attribute is onChainData
+						localConstraints.add(new Combination(cc.onChainData,cc.blockchainType,cc.onChainModel,cc.enforcement,cc.globalEnforcement));
+						//parent attributes are blockchainType and onChainModel
+						parentConstraints.add(new Combination(cc.blockchainType,cc.onChainModel,cc.enforcement,cc.globalEnforcement));
 					} else {
-						tempConstraints.add(new Combination(childCombination));
+						//all attributes must be propagated
+						parentConstraints.add(new Combination(cc));
 					}
 				}
-				if (!tempConstraints.isEmpty()) {
-					upCombinations.addAll(splitCombination(tempConstraints));
+				
+				//current node has some combinations
+				if(localCombinations!=null){
+					constrain(localCombinations,localConstraints);
+					//a conflict exists among local constraints
+					if(localCombinations.size()==0){
+						System.out.println("Errors were found evaluating security annotations");
+						messages.add(new ConsoleMessage(Severity.ERROR, node.getUuid(), "Conflicting privacy constraints hold for element "));
+						//TODO decidere se terminare l'esecuzione della funzione.
+					}
 				}
+					if(parentCombinations!=null){
+						constrain(parentCombinations,parentConstraints);
+					
+
+					} else {
+						parentCombinations = new ArrayList<Combination>();
+						parentCombinations.addAll(parentConstraints);
+						
+					}
+				}
+			
+		
+			if(parentCombinations != null) {
+				upCombinations.addAll(splitCombination(parentCombinations));
+				System.out.println("upcombinations: " + upCombinations);
+				}
+			
+			
+			if (!upCombinations.isEmpty() && parentCombinations != null && !parentCombinations.isEmpty()) {
+				finalCombinations = constrainSet(upCombinations, parentCombinations);
+				System.out.println("PROPAGATEUP4");
+			} else if (parentCombinations == null || parentCombinations.isEmpty()) {
+				finalCombinations = constrainSetNode(upCombinations, null);
+				System.out.println("PROPAGATEUP4");
+			} else {
+				System.out.println("Errors were found evaluating security annotations");
+				messages.add(new ConsoleMessage(Severity.ERROR, node.getUuid(),
+						"Conflicting privacy constraints hold for element "));
+				// TODO: decide whether to terminate the function.
 			}
-		}
+			
 
-		if (!upCombinations.isEmpty()) {
-			finalCombinations = constrainSet(upCombinations, parentCombinations);
-		} else {
-			System.out.println("Errors were found evaluating security annotations");
-			messages.add(new ConsoleMessage(Severity.ERROR, node.getUuid(),
-					"Conflicting privacy constraints hold for element "));
-			// TODO: decide whether to terminate the function.
 		}
-
+		
+		
 		sets.put(node.getUuid(), localCombinations);
-		System.out.println("Analyzing: " + node.getUuid());
-		System.out.println("Parent combinations: " + parentCombinations);
-		System.out.println("Local combinations: " + localCombinations);
-
+		System.out.println("Analyzing: "+node.getUuid());
+		System.out.println("Parent combinations: "+parentCombinations);
+		System.out.println("Local combinations: "+sets.get(node.getUuid()));
+		System.out.println("up sets:" + upCombinations);
+		System.out.println("fianl combinations: " + finalCombinations);
 		return finalCombinations;
 	}
+	
+						
+				
 
 	public static List<List<Combination>> splitCombination(List<Combination> input) {
-		List<List<Combination>> output = new ArrayList<>();
-		avoidRepetition(input, new ArrayList<>(), output);
-		return output;
+	    List<List<Combination>> output = new ArrayList<>();
+	    for (Combination c : input) {
+	        boolean found = false;
+	        for (List<Combination> subset : output) {
+	            if (!checkCombination(subset, c)) {
+	                subset.add(c);
+	                found = true;
+	                break;
+	            }
+	        }
+	        if (!found) {
+	            List<Combination> newSubset = new ArrayList<>();
+	            newSubset.add(c);
+	            output.add(newSubset);
+	        }
+	    }
+
+	    // Remove duplicates
+	    List<List<Combination>> uniqueOutput = new ArrayList<>();
+	    for (List<Combination> subset : output) {
+	        if (!uniqueOutput.contains(subset)) {
+	            uniqueOutput.add(subset);
+	        }
+	    }
+
+	    return uniqueOutput;
 	}
 
-	private static void avoidRepetition(List<Combination> input, List<Combination> current,
-			List<List<Combination>> output) {
-		if (current.size() > 0) {
-			output.add(new ArrayList<>(current));
-		}
-
-		for (int i = 0; i < input.size(); i++) {
-			// Avoid duplicate elements in the current combination
-			if (current.contains(input.get(i))) {
-				continue;
-			}
-			current.add(input.get(i));
-			List<Combination> remaining = new ArrayList<>();
-			for (int j = i + 1; j < input.size(); j++) {
-				remaining.add(input.get(j));
-			}
-			avoidRepetition(remaining, current, output);
-			current.remove(current.size() - 1);
-		}
+	private static boolean checkCombination(List<Combination> subset, Combination c) {
+	    for (Combination s : subset) {
+	        if (c.satisfies(s)) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Filters a list of sets of combinations by checking whether each combination
 	 * satisfies the parent constraints. If a combination satisfies a constraint,
@@ -470,6 +550,37 @@ public class InferBCProperties {
 		return toAdd;
 	}
 
+	private List<Combination> constrainSetNode(List<List<Combination>> sets, GMTNode node) {
+		List<Combination> result = new ArrayList<>();
+		for (List<Combination> s : sets) {
+			for (Combination c : s) {
+				if (node instanceof Definitions)
+					if ((((Definitions) node).getBlockchainType() == BlockchainType.UNDEFINED
+							|| ((Definitions) node).getBlockchainType() == c.blockchainType)
+							&& (((Definitions) node).getOnChainModel() == null
+									|| ((Definitions) node).getOnChainModel() == c.onChainModel))
+							
+						result.add(c);
+				if (node instanceof SubProcess)
+					if (((SubProcess) node).getOnChainModel() == null
+							|| ((SubProcess) node).getOnChainModel() == c.onChainModel)
+						result.add(c);
+				if (node instanceof Process)
+					if (((Process) node).getOnChainModel() == null
+							|| ((Process) node).getOnChainModel() == c.onChainModel)
+						result.add(c);
+				if (node instanceof DataItems)
+					if (((DataItems) node).getOnChainData() == OnChainData.UNDEFINED
+							|| ((DataItems) node).getOnChainData() == c.onChainData)
+						result.add(c);
+				if (node instanceof Task)
+					if (((Task) node).getOnChainExecution() == null
+							|| ((Task) node).getOnChainExecution() == c.onChainExecution)
+						result.add(c);
+			}
+		}
+		return result;
+	}
 	/**
 	 * This function takes a GMTNode object and a HashMap containing a list of
 	 * Combination objects for each node,propagates the combinations down to the child nodes. It analyzes the
@@ -683,6 +794,46 @@ public class InferBCProperties {
 		return maxEnforcementCombination;
 	}
 
+	private void constrain(List<Combination> list, List<Combination> constraints) {
+		List<Combination> toRemove = new ArrayList<Combination>();
+		for(Combination i : list){
+			Boolean found = false;
+			for(Combination c : constraints){
+				if(i.satisfies(c)){
+					i.globalEnforcement = (i.globalEnforcement + c.globalEnforcement)/2;
+					found = true;
+					break;
+				}
+			}
+			if(!(found)){
+				toRemove.add(i);
+			}
+		}
+		for (Combination deleted: toRemove){
+			list.remove(deleted);
+		}
+	}
+	private List<Combination> factorize(List<Combination> combinations) {
+		List<Combination> newSet = new ArrayList<Combination>();
+		for (Combination oldC: combinations){
+			boolean keep = true;
+			//check if a compatible combination is already present in new set
+			for (Combination newC: newSet){
+				Combination moreStringent = oldC.compareTo(newC);
+				if (moreStringent!=null){
+					//replace current combination with more stringent one
+					newC = moreStringent;
+					keep=false;
+				}
+			}
+			//combination not present yet, add it
+			if(keep){
+				newSet.add(oldC);
+			}
+		}
+		return newSet;
+	}
+
 	/*
 	 * private void constrain(List<Combination> list, List<Combination> constraints)
 	 * { List<Combination> toRemove = new ArrayList<Combination>(); for (Combination
@@ -690,7 +841,7 @@ public class InferBCProperties {
 	 * (i.satisfies(c)) { found = true; break; } } if (!(found)) { toRemove.add(i);
 	 * } } for (Combination deleted : toRemove) { list.remove(deleted); } }
 	 * 
-	 * private List<Combination> factorize(List<Combination> combinations) {
+	  private List<Combination> factorize(List<Combination> combinations) {
 	 * List<Combination> newSet = new ArrayList<Combination>(); for (Combination
 	 * oldC : combinations) { boolean keep = true; // check if a compatible
 	 * combination is already present in new set for (Combination newC : newSet) {

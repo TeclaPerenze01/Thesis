@@ -63,11 +63,11 @@ public class Combination {
 		
 	public String toString(){
 		if(onChainExecution != null)
-			return "{onChainExecution: " + onChainExecution + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement +",globalEnforcement: "+ globalEnforcement +"}";
+			return "{onChainExecution: " + onChainExecution + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement +", globalEnforcement: "+ globalEnforcement +"}";
 		else if (onChainData != null)
-			return "{onChainData: " + onChainData + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + ",globalEnforcement: "+ globalEnforcement +"}";
+			return "{onChainData: " + onChainData + ", blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + ", globalEnforcement: "+ globalEnforcement +"}";
 		else
-			return "{blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + ",globalEnforcement: \"+ globalenforcement +\"}";
+			return "{blockchainType: " + blockchainType + ", onChainModel: " + onChainModel + ", enforcement: " + enforcement + ", globalEnforcement: "+ globalEnforcement +"}";
 	}
 
 	public boolean satisfies(Combination constraint) {
@@ -93,6 +93,7 @@ public class Combination {
 				this.blockchainType == other.blockchainType){
 			//old item more stringent or equal than new one
 			if(this.enforcement.compareTo(other.enforcement) >= 0){
+				this.globalEnforcement = (this.globalEnforcement + other.globalEnforcement) / 2;
 				return this;
 			//new item more stringent than old one
 			} else {

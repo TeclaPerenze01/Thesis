@@ -1,8 +1,8 @@
 package it.polimi.isgroup.secbpmn2bc.model.infer;
 
 public enum GlobalEnforcement {
-    NATIVE(0),
-    NOENF(1),
+    NATIVE(1),
+    NOENF(0),
     POSSIBLE(0.5);
 
     private final double value;
