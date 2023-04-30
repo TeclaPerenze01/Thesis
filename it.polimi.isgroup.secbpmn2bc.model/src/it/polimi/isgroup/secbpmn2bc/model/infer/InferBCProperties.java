@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -54,9 +55,9 @@ public class InferBCProperties {
 	 */
 	public List<ConsoleMessage> annotate(Resource resource, Boolean override) {
 
-		System.out.println(1);
+		
 		Definitions def = (Definitions) resource.getContents().get(0);
-		System.out.println(1);
+		
 		// Admissible combinations
 		HashMap<String, List<Combination>> result = new HashMap<String, List<Combination>>();
 
@@ -64,7 +65,7 @@ public class InferBCProperties {
 		// dependencies)
 
 		List<ConsoleMessage> messages = determineAdmissibleCombinations(def, result, override);
-		System.out.println(2);
+		
 		if (checkForErrors(messages)) {
 			return messages;
 		}
@@ -72,9 +73,9 @@ public class InferBCProperties {
 		// Find best assignment for each element
 
 		propagateDown((GMTNode) def, result, true);
-		System.out.println(4);
+		
 		setBCProperties(def, result);
-		System.out.println(5);
+		
 		return messages;
 	}
 
@@ -209,7 +210,7 @@ public class InferBCProperties {
 
 		messages.add(new ConsoleMessage(Severity.INFORMATION, null, "Finished evaluating security annotations"));
 		System.out.println("Finished evaluating security annotations");
-		System.out.println("right set" + result);
+		System.out.println("Initial set for each node" + result);
 
 		propagateUp((GMTNode) def, result, messages, override);
 
@@ -330,52 +331,6 @@ public class InferBCProperties {
 			}
 		}
 
-	}
-
-	/**
-	 * 
-	 * Splits the list of combinations into a list of lists of combinations, where
-	 * each inner list has only one element.
-	 * 
-	 * @param combinations the list of combinations to split
-	 * @return the list of lists of combinations
-	 */
-	public static List<List<Combination>> splitCombination(List<Combination> input) {
-		List<List<Combination>> output = new ArrayList<>();
-		for (Combination c : input) {
-			boolean found = false;
-			for (List<Combination> subset : output) {
-				if (!checkCombination(subset, c)) {
-					subset.add(c);
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				List<Combination> newSubset = new ArrayList<>();
-				newSubset.add(c);
-				output.add(newSubset);
-			}
-		}
-
-		// Remove duplicates
-		List<List<Combination>> uniqueOutput = new ArrayList<>();
-		for (List<Combination> subset : output) {
-			if (!uniqueOutput.contains(subset)) {
-				uniqueOutput.add(subset);
-			}
-		}
-
-		return uniqueOutput;
-	}
-
-	private static boolean checkCombination(List<Combination> subset, Combination c) {
-		for (Combination s : subset) {
-			if (c.satisfies(s)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 
@@ -560,6 +515,54 @@ public class InferBCProperties {
 
 		return finalCombinations;
 	} 
+	
+	
+	/**
+	 * 
+	 * Splits the list of combinations into a list of lists of combinations, where
+	 * each inner list has only one element.
+	 * 
+	 * @param combinations the list of combinations to split
+	 * @return the list of lists of combinations
+	 */
+	public static List<List<Combination>> splitCombination(List<Combination> input) {
+		List<List<Combination>> output = new ArrayList<>();
+		for (Combination c : input) {
+			boolean found = false;
+			for (List<Combination> subset : output) {
+				if (!checkCombination(subset, c)) {
+					subset.add(c);
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				List<Combination> newSubset = new ArrayList<>();
+				newSubset.add(c);
+				output.add(newSubset);
+			}
+		}
+
+		// Remove duplicates
+		List<List<Combination>> uniqueOutput = new ArrayList<>();
+		for (List<Combination> subset : output) {
+			if (!uniqueOutput.contains(subset)) {
+				uniqueOutput.add(subset);
+			}
+		}
+
+		return uniqueOutput;
+	}
+
+	private static boolean checkCombination(List<Combination> subset, Combination c) {
+		for (Combination s : subset) {
+			if (c.satisfies(s)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	/**
 	 * Filters a list of sets of combinations by checking whether each combination
@@ -743,50 +746,126 @@ public class InferBCProperties {
 	 *                 combination or not
 	 */
 
-	private void propagateDown(GMTNode node, HashMap<String, List<Combination>> sets, Boolean selectFirst) {
+	private void propagateDown(GMTNode node, HashMap<String, List<Combination>> sets, boolean selectFirst) {
 
-		// Step 1: print which node is being analyzed
-		System.out.println();
+		// Step 1: Print which node is being analyzed
 		System.out.println("Analyzing: " + node.getUuid());
 
-		// Step 2: get the combinations for the current node
+		// Step 2: Get the combinations for the current node
 		List<Combination> nodeCombinations = sets.get(node.getUuid());
 
-		// Step 3: check if there are any combinations for this node
+		// Step 3: Check if there are any combinations for this node
 		if (nodeCombinations == null) {
 			System.out.println("No combinations found for node: " + node.getUuid());
 		} else {
-			System.out.println("Combinations of current node (" + node.getUuid() + "): " + nodeCombinations);
+			// Print the current node's combinations
+			System.out.println("Set of current node (" + node.getUuid() + "): " + nodeCombinations);
 		}
 
-		// Step 4: select only the first combination if selectFirst is true
-		if (selectFirst) {
-			if (node instanceof DataItems || node instanceof Task) {
+		// Step 4: If the node is a root or a process or a subprocess, save iteratively
+		// one combination at iteration
+		// and save it in a set: CURRENTCOMBINATION. Print it.
+		List<Combination> currentCombinations = new ArrayList<>();
+		if (node instanceof Definitions || node instanceof Process || node instanceof SubProcess) {
+			for (Combination currentCombination : nodeCombinations) {
+				currentCombinations.clear();
+				currentCombinations.add(currentCombination);
+				System.out.println("Current combination: " + currentCombination);
 
-				if (nodeCombinations != null && !nodeCombinations.isEmpty()) {
-					List<Combination> newCombinations = new ArrayList<>();
-					Combination best = getBestLastCombination(nodeCombinations);
-					newCombinations.add(best);
-					nodeCombinations = newCombinations;
-					sets.put(node.getUuid(), nodeCombinations);
-					System.out.println("Best Combination of leaf node (" + node.getUuid() + "): " + nodeCombinations);
+				// Step 5: Constrain CURRENTCOMBINATION with all the sets of children nodes and
+				// save the obtained set into CONSTRAINED SETS.
+				HashMap<String, List<Combination>> constrainedSets = new HashMap<>();
+				for (Map.Entry<String, List<Combination>> entry : sets.entrySet()) {
+					String nodeId = entry.getKey();
+					List<Combination> nodeCombinations1 = entry.getValue();
+					List<Combination> compatibleCombinations = new ArrayList<>();
+
+					GMTNode nodeToConstrain = null;
+					for (GMTNode child : node.getNodes()) {
+						if (child.getUuid().equals(nodeId)) {
+							nodeToConstrain = child;
+							break;
+						}
+					}
+					if (nodeToConstrain != null) {
+						for (Combination nodeCombination : nodeCombinations1) {
+							if (nodeCombination.satisfies(currentCombination)) {
+								compatibleCombinations.add(nodeCombination);
+							}
+						}
+					} else {
+						// Add external variables to the constrained sets
+						compatibleCombinations.addAll(nodeCombinations1);
+					}
+					constrainedSets.put(nodeId, compatibleCombinations);
+					System.out.println("Set obtained for node " + nodeId + ": " + compatibleCombinations);
+				}
+
+				// Step 6: If child node is a Task or a DataItem, select from the CONSTRAINED
+				// SETS the best combination through the function getBestLastCombination,
+				// save it into a separate set, and print it.
+				if (selectFirst) {
+					for (GMTNode child : node.getNodes()) {
+						if (child instanceof Task || child instanceof DataItems) {
+							List<Combination> childCombinations = constrainedSets.get(child.getUuid());
+							if (childCombinations != null && !childCombinations.isEmpty()) {
+								Combination bestCombination = getBestLastCombination(childCombinations);
+								List<Combination> newCombinations = new ArrayList<>();
+								newCombinations.add(bestCombination);
+								System.out.println(
+										"Best combination for leaf node " + child.getUuid() + ": " + newCombinations);
+							}
+						}
+					}
+				}
+			}
+		} else {
+			// Step 7: Repeat all for all the other combinations of root set.
+			for (Combination currentCombination : nodeCombinations) {
+				System.out.println("Current combination: " + currentCombination);
+
+				// Step 5: Constrain CURRENTCOMBINATION with all the sets of children nodes and
+				// save the obtained set into CONSTRAINED SETS.
+				HashMap<String, List<Combination>> constrainedSets = new HashMap<>(sets);
+				for (GMTNode child : node.getNodes()) {
+					List<Combination> childNodeCombinations = constrainedSets.get(child.getUuid());
+					if (childNodeCombinations == null) {
+						continue;
+					}
+					List<Combination> compatibleCombinations = new ArrayList<>();
+					for (Combination childCombination : childNodeCombinations) {
+						if (childCombination.satisfies(currentCombination)) {
+							compatibleCombinations.add(childCombination);
+						}
+					}
+					constrainedSets.put(child.getUuid(), compatibleCombinations);
+					System.out.println("Set obtained for node " + child.getUuid() + ": " + compatibleCombinations);
+				}
+				// Step 6: If child node is a Task or a DataItem, select from the CONSTRAINED
+				// SETS the best combination through the function getBestLastCombination,
+				// save it into a separate set, and print it.
+				if (selectFirst) {
+					for (GMTNode child : node.getNodes()) {
+						if (child instanceof Task || child instanceof DataItems) {
+							List<Combination> childCombinations = constrainedSets.get(child.getUuid());
+							if (childCombinations != null && !childCombinations.isEmpty()) {
+								Combination bestCombination = getBestLastCombination(childCombinations);
+								List<Combination> newCombinations = new ArrayList<>();
+								newCombinations.add(bestCombination);
+								System.out.println(
+										"Best combination for leaf node " + child.getUuid() + ": " + newCombinations);
+							}
+						}
+					}
+				}
+
+				// Recursively propagate down the tree to the children nodes
+				for (GMTNode child : node.getNodes()) {
+					propagateDown(child, constrainedSets, selectFirst);
 				}
 			}
 		}
-
-		// Step 5: propagate the combinations down to child nodes
-		for (GMTNode child : node.getNodes()) {
-			// Step 6: create a copy of the current set for the child node
-			HashMap<String, List<Combination>> childSets = new HashMap<>(sets);
-
-			// Step 7: set the combinations for the child node to the parent combinations
-			childSets.put(child.getUuid(), nodeCombinations);
-
-			// Step 8: recursively call propagateDown on the child node
-			propagateDown(child, childSets, selectFirst);
-		}
 	}
-
 	/**
 	 * 
 	 * This private method constrains the admissible combinations based on a GMT
