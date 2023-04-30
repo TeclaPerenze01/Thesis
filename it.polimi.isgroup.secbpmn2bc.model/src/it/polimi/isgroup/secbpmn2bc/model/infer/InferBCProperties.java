@@ -594,7 +594,7 @@ public class InferBCProperties {
 		return toAdd;
 	}
 
-	private List<Combination> constrainSetNode(List<List<Combination>> sets, GMTNode node) {
+/*	private List<Combination> constrainSetNode(List<List<Combination>> sets, GMTNode node) {
 		List<Combination> result = new ArrayList<>();
 		for (List<Combination> s : sets) {
 			for (Combination c : s) {
@@ -624,7 +624,7 @@ public class InferBCProperties {
 			}
 		}
 		return result;
-	}
+	}*/
 
 	private List<Combination> constraints(List<Combination> nodeCombinations, GMTNode node) {
 		List<Combination> result = new ArrayList<Combination>();
