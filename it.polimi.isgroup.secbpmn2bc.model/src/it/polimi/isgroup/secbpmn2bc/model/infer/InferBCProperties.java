@@ -63,7 +63,7 @@ public class InferBCProperties {
 
 		// Find admissible combinations for the whole process (check for indirect
 		// dependencies)
-
+		System.out.println(1);
 		List<ConsoleMessage> messages = determineAdmissibleCombinations(def, result, override);
 		
 		if (checkForErrors(messages)) {
@@ -383,7 +383,7 @@ public class InferBCProperties {
 				} else if (!(node instanceof Definitions)) {
 					parentCombinations.add(new Combination(c));
 				}
-			}System.out.println("stampa le combinazioni temp per tutti i nodi figli" + parentCombinations);
+			}
 		}
 		
 
@@ -446,6 +446,7 @@ public class InferBCProperties {
 			// Step 8: Derive all possible susbet form Parent Set
 			if (parentCombinations != null) {
 				upCombinations.addAll(splitCombination(parentCombinations));
+				
 
 			}
 
@@ -453,7 +454,9 @@ public class InferBCProperties {
 			if (!upCombinations.isEmpty() ) {
 				finalCombinations = constrainSet(upCombinations, parentCombinations);
 
+				//case if the parent node has no security annotation at the initial step
 			} else if (parentCombinations == null || parentCombinations.isEmpty()) {
+				
 				for (List<Combination> set : upCombinations) {
 			        finalCombinations.addAll(set);
 			    }
@@ -469,42 +472,64 @@ public class InferBCProperties {
 						// the set finalCombinations of his children in a finalLocalSet and overwrite
 						// the set of the parent node with it
 			 
-					if (localCombinations == null && !node.getNodes().isEmpty() && !(node instanceof Definitions)) {
-					    System.out.println("Node " + node.getUuid() + " has a null local combination");
+			if (localCombinations == null && !node.getNodes().isEmpty() && (node instanceof Process || node instanceof SubProcess)) {
+			    System.out.println("Node " + node.getUuid() + " has a null local combination");
 
-					    List<Combination> finalLocalSet = new ArrayList<>();
-					    for (List<Combination> set : upCombinations) {
-					        finalLocalSet.addAll(set);
-					    }
-					    sets.put(node.getUuid(), finalLocalSet);
-					    System.out.println("Overwriting node " + node.getUuid() + " with set: " + finalLocalSet);
-					    System.out.println("Overwriting local set of node " + node.getUuid() + " with set: " + sets.get(node.getUuid()));
-					    
-					   
-					
-					}else if (node instanceof Definitions) {
-					    if (localCombinations == null || localCombinations.isEmpty() || parentCombinations.isEmpty() || parentCombinations == null) {
-					        List<Combination> localFinalCombinations = new ArrayList<>();
-					        for (GMTNode children : node.getNodes()) {
-					        	
-					        List<Combination>temp = sets.get(children.getUuid());    
-					        if( !(children.getNodes().isEmpty()) && !(children instanceof Task) && !(children instanceof DataItems)) {
-					        System.out.println("Overwriting root with  " + children.getUuid() + " with " + temp);
-					        if( temp != null) {
-					           for (Combination baby : temp) {
-					           localFinalCombinations.add(baby);
-					          }
-					        sets.put(node.getUuid(),localFinalCombinations);
-					        System.out.println("Overwriting root " + node.getUuid() + " with " + localFinalCombinations);
-					    }
-					        }
-					        }
-					}else {
-					    // Current node is a leaf node, do not overwrite its set
-					    System.out.println("Node " + node.getUuid() + " is a leaf node");
-					}
-					
-					}	
+			    List<Combination> finalLocalSet = new ArrayList<>();
+			    for (List<Combination> set : upCombinations) {
+			        if (set != null) {
+			            finalLocalSet.addAll(set);
+			        }
+			    }
+			    if (!finalLocalSet.isEmpty()) {
+			        sets.put(node.getUuid(), finalLocalSet);
+			        System.out.println("Overwriting node " + node.getUuid() + " with set: " + finalLocalSet);
+			        System.out.println("Overwriting local set of node " + node.getUuid() + " with set: " + sets.get(node.getUuid()));
+			    }
+			} else if (node instanceof Definitions) {
+			    if (localCombinations == null || localCombinations.isEmpty() || parentCombinations == null || parentCombinations.isEmpty()) {
+			        List<Combination> localFinalCombinations = new ArrayList<>();
+			        for (GMTNode children : node.getNodes()) {
+			            if (!children.getNodes().isEmpty() && !(children instanceof Task) && !(children instanceof DataItems)) {
+			                List<Combination> temp = sets.get(children.getUuid());
+			                if (temp != null) {
+			                    for (Combination baby : temp) {
+			                        localFinalCombinations.add(baby);
+			                    }
+			                }
+			            }
+			        }
+			        if (!localFinalCombinations.isEmpty()) {
+			            sets.put(node.getUuid(), localFinalCombinations);
+			            System.out.println("Overwriting root " + node.getUuid() + " with " + localFinalCombinations);
+			        }
+			    }else {
+			        // Current node is not Definitions and has non-empty localCombinations
+			        System.out.println("Node " + node.getUuid() + " has a non-empty local combination");
+
+			        // Combine upCombinations
+			        List<Combination> finalLocalSet = new ArrayList<>();
+			        for (List<Combination> set : upCombinations) {
+			            finalLocalSet.addAll(set);
+			        }
+
+			        // Constrain localCombinations with finalLocalSet
+			        List<Combination> constrainedLocalCombinations = new ArrayList<>();
+			        for (Combination localCombination : localCombinations) {
+			            if (finalLocalSet.contains(localCombination)) {
+			                constrainedLocalCombinations.add(localCombination);
+			            }
+			        }
+
+			        sets.put(node.getUuid(), constrainedLocalCombinations);
+			        System.out.println("Overwriting node " + node.getUuid() + " with set: " + constrainedLocalCombinations);
+			        System.out.println("Overwriting local set of node " + node.getUuid() + " with set: " + sets.get(node.getUuid()));
+			    }
+
+			} else {
+			    // Current node is a leaf node, do not overwrite its set
+			    System.out.println("Node " + node.getUuid() + " is a leaf node");
+			}
 					
 					
 		// Step 11: Print the final set for the node
@@ -770,7 +795,7 @@ public class InferBCProperties {
 			for (Combination currentCombination : nodeCombinations) {
 				currentCombinations.clear();
 				currentCombinations.add(currentCombination);
-				System.out.println("Current combination: " + currentCombination);
+				System.out.println("Current combination of: ("+node.getUuid() +"):" + currentCombination);
 
 				// Step 5: Constrain CURRENTCOMBINATION with all the sets of children nodes and
 				// save the obtained set into CONSTRAINED SETS.

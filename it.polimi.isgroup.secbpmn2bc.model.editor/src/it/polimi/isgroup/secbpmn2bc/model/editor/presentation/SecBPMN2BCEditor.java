@@ -141,6 +141,7 @@ import it.polimi.isgroup.secbpmn2bc.model.editor.internal.Activator;
 import it.polimi.isgroup.secbpmn2bc.model.editor.internal.Secbpmn2bcEditorAdvisor;
 import it.polimi.isgroup.secbpmn2bc.model.infer.ConsoleMessage;
 import it.polimi.isgroup.secbpmn2bc.model.infer.InferBCProperties;
+import it.polimi.isgroup.secbpmn2bc.model.infer.InferBCPropertiesOptimized;
 import it.unitn.disi.sweng.gmt.model.edit.provider.GMTItemProviderAdapterFactory;
 
 import it.unitn.disi.sweng.secbpmn.model.edit.provider.SecBPMNItemProviderAdapterFactory;
