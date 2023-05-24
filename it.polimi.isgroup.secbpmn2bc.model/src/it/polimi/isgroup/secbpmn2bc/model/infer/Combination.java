@@ -102,5 +102,32 @@ public class Combination {
 		}
 		return null;
 	}
+
+	
+	// need for the optimized version,similar to the previous function but here i need to select the one with lowest GLE
+	// this function is called if in the obtained set for parent node after the propagation of children constraints there are similar combinations that do not cause conflict
+	// this function select only one combination among the two
+	public Combination compareToFactorize(Combination other){
+		if(this.onChainExecution == other.onChainExecution && 
+				this.onChainModel == other.onChainModel &&
+				this.onChainData == other.onChainData &&
+				this.blockchainType == other.blockchainType){
+			//old item more stringent or equal than new one
+			if((this.enforcement.compareTo(other.enforcement) >= 0) && (this.globalEnforcement < other.globalEnforcement)){
+			
+				return this;
+			//new item more stringent than old one
+			} else {
+				return other;
+			}
+		}
+		return null;
+	}
+	
+	
+	public Object remove(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

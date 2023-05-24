@@ -1397,7 +1397,7 @@ public class SecBPMN2BCEditor extends MultiPageEditorPart
 
 	public void doAnnotate() {
 		for (Resource resource : editingDomain.getResourceSet().getResources()) {
-			InferBCProperties p = new InferBCProperties();
+			InferBCPropertiesOptimized p = new InferBCPropertiesOptimized();
 			MessageConsole myConsole = SecBPMN2BCActionBarContributor.findConsole("MyConsole");
 			MessageConsoleStream out = myConsole.newMessageStream();
 
@@ -1422,7 +1422,7 @@ public class SecBPMN2BCEditor extends MultiPageEditorPart
 	
 	public void doCheck() {
 		for (Resource resource : editingDomain.getResourceSet().getResources()) {
-			InferBCProperties p = new InferBCProperties();
+			InferBCPropertiesOptimized p = new InferBCPropertiesOptimized();
 			MessageConsole myConsole = SecBPMN2BCActionBarContributor.findConsole("MyConsole");
 			MessageConsoleStream out = myConsole.newMessageStream();
 

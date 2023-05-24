@@ -349,7 +349,7 @@ public class InferBCProperties {
 
 		// Step 3: Print the initial set for the node
 		if (node.getParent() == null) {
-		    // If the node is the root node, print its initial combination set
+		    // If the node is the root node, print its initial combination set \\librerie di loging tipo logforj2
 		    System.out.println("Initial combination set for root node (" + node.getUuid() + "): " + localCombinations);
 		    List<GMTNode> children = node.getNodes();
 		    System.out.println("Direct children of " + node.getUuid() + ":");
